@@ -1,3 +1,11 @@
+// ╔═════════════════════════════════╗
+// ║           Projekt IMS           ║
+// ║            Zadani 8             ║
+// ║   Model dopravy na dálnici D1   ║
+// ╠═════════════════════════════════╣
+// ║       xherma25 / xstodu06       ║
+// ╚═════════════════════════════════╝
+
 #include <simlib.h>
 #include <time.h>
 #include <iostream>
