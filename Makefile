@@ -20,32 +20,28 @@ SIMLIB_DEPEND = $(SIMLIB_DIR)/simlib.h \
 		$(SIMLIB_DIR)/simlib3D.h \
 		$(SIMLIB_DIR_SO)/libsimlib.so 
 
-
 % : %.cc  $(SIMLIB_DEPEND)
 	$(CXX) $(CXXFLAGS) -o $@  $< $(SIMLIB_DIR_SO)/libsimlib.so -lm
 
+
 # list of all test models
-ALL_TEST_MODELS = main
+INPUT_FILE = src/main
 
 #############################################################################
 # RULES
 
-all: $(ALL_TEST_MODELS)
-
-run: all
-	@for i in $(ALL_TEST_MODELS); do echo $$i; ./$$i >$$i.out; done
-	@./sizeof-all >sizeof-all-`file ./sizeof-all|sed 's/.*\([36][24]\)-bit.*/\1/'`.out
+all: $(INPUT_FILE)
 
 #############################################################################
 # cleaning, backup, etc
 
 clean: 
-	rm -f $(ALL_TEST_MODELS) *.o *~
+	rm -f $(INPUT_FILE) *.o *~
 
 clean-all: clean
 	rm -f *.dat *.out
 
 pack:
-	tar czf tests.tar.gz  *.cc Makefile* *.txt *.output *.plt
+	tar czf ims.tar.gz  *.cc Makefile* *.txt *.output *.plt
 
 # end of Makefile
