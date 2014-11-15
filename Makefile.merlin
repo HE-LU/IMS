@@ -9,7 +9,7 @@ CXXFLAGS += -O2 # optimization level
 #CXXFLAGS += -pg # profiling support
 
 SIMLIB_DIR = /usr/local/include
-SIMLIB_DIR_SO = /usr/local/lib
+SIMLIB_DIR_SO = /usr/local/lib64
 
 CXXFLAGS += -I$(SIMLIB_DIR)
 
