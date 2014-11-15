@@ -42,10 +42,13 @@
 
 
 // =========================
-// ========= Exits =========
+// ==== Exits & Entries ====
 
-const int EXITS_PRAHA_BRNO[] = {0,1,2,10,12,15,21,29,34,41,49,56,66,75,81,90,104,112,119,134,141,146,153,162,168,178,182,190,194,196,201,203};
-const int EXITS_BRNO_PRAHA[] = {0,1,2,10,12,15,21,29,34,41,49,56,66,75,81,90,104,112,119,134,141,146,153,162,168,178,182,190,194,196,201,203};
+const int EXITS_PRAHA_BRNO[] = {2,6,8,10,15,21,29,34,41,49,56,66,75,90,104,112/*2x*/,119,134,141,146,153,162,168,178,182,190,194/*2x*/,196/*2x*/,201};
+const int EXITS_BRNO_PRAHA[] = {1,2/*2x*/,6,8,12,15,21,29,34,41,49,56,66,81,90,104,112,119,134,141,146,153,162,168,178,182,190,194/*2x*/,196/*2x*/,201,203};
+
+const int ENTRIES_PRAHA_BRNO[] = {1,2,6,8,12,15,21,29,34,41,49,56,66,81,90,104,112,119,134,141,146,153,162,168,178,182,190,194/*2x*/,196/*2x*/,201,203};
+const int ENTRIES_BRNO_PRAHA[] = {2,6,8,10,15,21,29,34,41,49,56,66,75,90,104,119,134,141,146,153,162,168,178,182,190,194/*2x*/,196/*2x*/,201};
 
 bool isExit(int km, int direction)
 {
@@ -57,7 +60,17 @@ bool isExit(int km, int direction)
 	return exists;
 }
 
-// ========= Exits =========
+bool isEntry(int km, int direction)
+{
+	bool entries;
+	if(direction == PRAHA_BRNO)
+		entries = std::find(std::begin(ENTRIES_PRAHA_BRNO), std::end(ENTRIES_PRAHA_BRNO), km) != std::end(ENTRIES_PRAHA_BRNO);
+	else
+		entries = std::find(std::begin(ENTRIES_BRNO_PRAHA), std::end(ENTRIES_BRNO_PRAHA), km) != std::end(ENTRIES_BRNO_PRAHA);	
+	return entries;
+}
+
+// ==== Exits & Entries ====
 // =========================
 
 
