@@ -26,7 +26,7 @@
 #define                             DEBUG
 
 // zatazenie vjazdov a vyjazdov
- #define                             INOUT
+#define                             INOUT
 
 
 // dlzka experimentu v dnoch

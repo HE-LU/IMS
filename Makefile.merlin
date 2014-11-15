@@ -20,12 +20,12 @@ SIMLIB_DEPEND = $(SIMLIB_DIR)/simlib.h \
 		$(SIMLIB_DIR)/simlib3D.h \
 		$(SIMLIB_DIR_SO)/libsimlib.so 
 
-% : %.cc  $(SIMLIB_DEPEND)
-	$(CXX) $(CXXFLAGS) -o $@  $< $(SIMLIB_DIR_SO)/libsimlib.so -lm
-
-
 # list of all test models
 INPUT_FILE = src/main
+OUTPUT_FILE = bin/main
+
+% : %.cc  $(SIMLIB_DEPEND)
+	$(CXX) $(CXXFLAGS) -o $(OUTPUT_FILE) $< $(SIMLIB_DIR_SO)/libsimlib.so -lm
 
 #############################################################################
 # RULES
@@ -36,7 +36,7 @@ all: $(INPUT_FILE)
 # cleaning, backup, etc
 
 clean: 
-	rm -f $(INPUT_FILE) *.o *~
+	rm -f $(INPUT_FILE) $(OUTPUT_FILE) *.o *~
 
 clean-all: clean
 	rm -f *.dat *.out

@@ -27,4 +27,4 @@
 *.out
 *.app
 
-src/main
+bin/*

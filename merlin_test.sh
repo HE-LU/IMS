@@ -1,10 +1,24 @@
 #!/bin/bash
-make clean; make --makefile=Makefile.merlin
-./src/main
+make clean
+echo "╔═════════════════════════════════╗"
+echo "║               MAKE              ║"
+echo "╚═════════════════════════════════╝"
+echo " ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ "
+echo ""
+make --makefile=Makefile.merlin
+echo ""
+echo "╔═════════════════════════════════╗"
+echo "║               RUN               ║"
+echo "╚═════════════════════════════════╝"
+echo " ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ "
+echo ""
+./bin/main
+echo ""
 echo "╔═════════════════════════════════╗"
 echo "║          OUTPUT BEGIN           ║"
 echo "╠═════════════════════════════════╣"
 echo "║               666               ║"
 echo "╚═════════════════════════════════╝"
-cat out
-
+echo " ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ "
+echo ""
+cat output.out
