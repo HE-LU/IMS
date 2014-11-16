@@ -30,9 +30,14 @@
 #define CAPACITY_LIMITED		CAPACITY / 2
 #define HIGHWAY_LENGTH			203
 
-#define GENERATE_CAR_DAY		0.67	//  6:00 - 18:00	// TODO
-#define GENERATE_CAR_EVENING	0.98	// 18:00 - 22:00	// TODO
-#define GENERATE_CAR_NIGHT		3.125	// 22:00 -  6:00	// TODO
+// #define GENERATE_CAR_DAY		0.67	//  6:00 - 18:00	// TODO
+// #define GENERATE_CAR_EVENING	0.98	// 18:00 - 22:00	// TODO
+// #define GENERATE_CAR_NIGHT		3.125	// 22:00 -  6:00	// TODO
+// #define GENERATE_ACCIDENT		40000	// TODO
+
+#define GENERATE_CAR_DAY		0.1	//  6:00 - 18:00	// TODO
+#define GENERATE_CAR_EVENING	0.25	// 18:00 - 22:00	// TODO
+#define GENERATE_CAR_NIGHT		1	// 22:00 -  6:00	// TODO
 #define GENERATE_ACCIDENT		40000	// TODO
 
 #define PRAHA_BRNO				1
@@ -134,7 +139,7 @@ class Car : public Process
 	void Behavior()
 	{
 		gCounterCar++;
-		// mCurrentPosition = vjazd(Random());
+		mCurrentPosition = najezdPrahaBrno(Random());
 		mEntryTime = Time;
 		gHighway[mCurrentPosition]->Enter(this, 1);
 		do
@@ -257,6 +262,10 @@ int main()
 	Run();
 
 	destroyHighway();
+
+	_Print("Dialnicou preslo %d osobnych aut\n",gCounterCar);
+  	_Print("Na dialnici sa stalo %d nehod\n\n",gCounterAccident);
+
 	return 0;
 }
 // ========= MAIN ==========
