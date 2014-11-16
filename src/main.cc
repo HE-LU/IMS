@@ -28,7 +28,6 @@
 #define DAY_IN_SECONDS			86400
 
 #define CAR_LENGTH				5.05
-// #define CAR_SPACING				72
 #define CAR_SPACING				72
 #define CAPACITY				round( (1000 / (CAR_LENGTH + CAR_SPACING)) * 2)
 #define CAPACITY_LIMITED		CAPACITY / 2
@@ -37,15 +36,10 @@
 // #define GENERATE_CAR_DAY			0.67	//  6:00 - 18:00	// TODO
 // #define GENERATE_CAR_EVENING		0.98	// 18:00 - 22:00	// TODO
 // #define GENERATE_CAR_NIGHT		3.125	// 22:00 -  6:00	// TODO
-// #define GENERATE_ACCIDENT		40000	// TODO
 
 #define GENERATE_CAR_DAY		1.34		//  6:00 - 18:00	// TODO
 #define GENERATE_CAR_EVENING	1.96		// 18:00 - 22:00	// TODO
-#define GENERATE_CAR_NIGHT		6.25 		// 22:00 -  6:00	// TODO
-
-// #define GENERATE_CAR_DAY		1		//  6:00 - 18:00	// TODO
-// #define GENERATE_CAR_EVENING	2		// 18:00 - 22:00	// TODO
-// #define GENERATE_CAR_NIGHT		6		// 22:00 -  6:00	// TODO
+#define GENERATE_CAR_NIGHT		3.25 		// 22:00 -  6:00	// TODO
 
 #define GENERATE_ACCIDENT		60000
 
@@ -79,21 +73,24 @@ const int ENTRIES_BRNO_PRAHA[]	= {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 50
 #define isUnderContructionBrnoPraha(i) ((i >= 127 && i <= 138 ) || (i >= 153  && i <= 163))
 
 #define najezdPrahaBrno(x) \
-((x < 0.4819277108) ?   0 : ((x < 0.4939759036) ?   1 : ((x < 0.5060240964) ?   2 : ((x < 0.5180722892) ?   6 : ((x < 0.5301204819) ?   8 : \
-        ((x < 0.5421686747) ?  12 : ((x < 0.5542168675) ?  15 : ((x < 0.5662650602) ?  21 : ((x < 0.578313253) ?  29 : ((x < 0.5903614458) ?  34 : \
-        ((x < 0.6024096386) ?  41 : ((x < 0.6144578313) ?  49 : ((x < 0.6265060241) ?  56 : ((x < 0.6385542169) ?  66 : ((x < 0.6506024096) ?  81 : \
-        ((x < 0.6626506024) ?  90 : ((x < 0.6746987952) ? 104 : ((x < 0.686746988) ? 112 : ((x < 0.6987951807) ? 119 : ((x < 0.7108433735) ? 134 : \
-        ((x < 0.7228915663) ? 141 : ((x < 0.734939759) ? 146 : ((x < 0.7469879518) ? 153 : ((x < 0.7590361446) ? 162 : ((x < 0.7771084337) ? 168 : \
-        ((x < 0.8012048193) ? 178 : ((x < 0.8373493976) ? 182 : ((x < 0.8855421687) ? 190 : ((x < 0.9457831325) ? 194 : ((x < 0.9819277108) ? 196 : 201))))))))))))))))))))))))))))))
+((x < 0.5882352941) ?   0 : ((x < 0.5882352941) ?   1 : ((x < 0.5882352941) ?   2 : ((x < 0.5882352941) ?   6 : ((x < 0.5882352941) ?   8 : \
+        ((x < 0.5882352941) ?  12 : ((x < 0.5882352941) ?  15 : ((x < 0.5882352941) ?  21 : ((x < 0.5882352941) ?  29 : ((x < 0.5882352941) ?  34 : \
+        ((x < 0.5882352941) ?  41 : ((x < 0.6029411765) ?  49 : ((x < 0.6176470588) ?  56 : ((x < 0.6323529412) ?  66 : ((x < 0.6470588235) ?  81 : \
+        ((x < 0.6617647059) ?  90 : ((x < 0.6764705882) ? 104 : ((x < 0.6764705882) ? 112 : ((x < 0.6764705882) ? 119 : ((x < 0.6764705882) ? 134 : \
+        ((x < 0.6764705882) ? 141 : ((x < 0.6764705882) ? 146 : ((x < 0.6764705882) ? 153 : ((x < 0.6764705882) ? 162 : ((x < 0.6764705882) ? 168 : \
+        ((x < 0.6764705882) ? 178 : ((x < 0.7058823529) ? 182 : ((x < 1) ? 190 : ((x < 1) ? 194 : ((x < 1) ? 196 : 201))))))))))))))))))))))))))))))
+							
 							
 
 #define sjezdPrahaBrno(x) \
-((isExitPrahaBrno(x)==0) ? 0   : ((x==2)   ? 0.4958677686 : ((x==6)   ? 0.03305785124  : ((x==8)   ? 0.03305785124 : ((x==10)  ? 0.03305785124 : \
-        ((x==15)  ? 0.02479338843 : ((x==21)  ? 0.02479338843 : ((x==29)  ? 0.02479338843 : ((x==34)  ? 0.02479338843 : ((x==41)  ? 0.02479338843 : \
-        ((x==49)  ? 0.02479338843 : ((x==56)  ? 0.02479338843 : ((x==66)  ? 0.02479338843 : ((x==75)  ? 0.01652892562 : ((x==90)  ? 0.01652892562 : \
-        ((x==104) ? 0.01652892562 : ((x==112) ? 0.01652892562 : ((x==119) ? 0.01652892562 : ((x==134) ? 0.01652892562 : ((x==141) ? 0.01652892562 : \
-        ((x==146) ? 0.01652892562 : ((x==153) ? 0.00826446281 : ((x==162) ? 0.00826446281 : ((x==168) ? 0.00826446281 : ((x==178) ? 0.00826446281 : \
-        ((x==182) ? 0.00826446281 : ((x==190) ? 0.00826446281 : ((x==194) ? 0.00826446281 : ((x==196) ? 0.00826446281 : ((x==201) ? 0.00826446281 : 1))))))))))))))))))))))))))))))					
+((isExitPrahaBrno(x)==0) ? 0   : ((x==2)   ? 0 : ((x==6)   ? 0  : ((x==8)   ? 0 : ((x==10)  ? 0 : \
+        ((x==15)  ? 0 : ((x==21)  ? 0 : ((x==29)  ? 0 : ((x==34)  ? 0 : ((x==41)  ? 0 : \
+        ((x==49)  ? 0 : ((x==56)  ? 0 : ((x==66)  ? 0 : ((x==75)  ? 0 : ((x==90)  ? 0 : \
+        ((x==104) ? 0 : ((x==112) ? 0 : ((x==119) ? 0 : ((x==134) ? 0 : ((x==141) ? 0 : \
+        ((x==146) ? 0 : ((x==153) ? 0 : ((x==162) ? 0 : ((x==168) ? 0 : ((x==178) ? 0 : \
+        ((x==182) ? 0 : ((x==190) ? 0 : ((x==194) ? 0 : ((x==196) ? 0 : ((x==201) ? 0 : 1))))))))))))))))))))))))))))))
+									
+								
 							
 #define najezdBrnoPraha(x) \
 	((x < 0.0222) ?   0 : ((x < 0.0535) ?   2 : ((x < 0.1414) ?   7 : ((x < 0.2210) ?   9 : ((x < 0.2519) ?  13 : \
@@ -121,23 +118,36 @@ int gDirection = PRAHA_BRNO;
 unsigned long gCounterCar = 0;
 unsigned long gCounterAccident = 0;
 
-unsigned long gCounterKm1to2 = 0;
-unsigned long gCounterKm2to6 = 0;
-unsigned long gCounterKm12to15 = 0;
-unsigned long gCounterKm41to49 = 0;
-unsigned long gCounterKm104to112 = 0;
-unsigned long gCounterKm153to162 = 0;
-unsigned long gCounterKm194to196 = 0;
+// unsigned long gCounterKm1to2 = 0;
+// unsigned long gCounterKm2to6 = 0;
+// unsigned long gCounterKm12to15 = 0;
+// unsigned long gCounterKm41to49 = 0;
+// unsigned long gCounterKm104to112 = 0;
+// unsigned long gCounterKm153to162 = 0;
+// unsigned long gCounterKm194to196 = 0;
+
+
+unsigned long gCounterArray[30];
 // ======== Global =========
 // =========================
 
-#define debugKm1to2(km)		if(km == 1)			 	gCounterKm1to2++
-#define debugKm2to6(km)		if(km == 4) 			gCounterKm2to6++
-#define debugKm12to15(km)	if(km == 14) 			gCounterKm12to15++
-#define debugKm41to49(km)	if(km == 45) 			gCounterKm41to49++
-#define debugKm104to112(km)	if(km == 107) 			gCounterKm104to112++
-#define debugKm153to162(km)	if(km == 158) 			gCounterKm153to162++
-#define debugKm194to196(km)	if(km == 195) 			gCounterKm194to196++
+// #define debugKm1to2(km)		if(km == 1)			 	gCounterKm1to2++
+// #define debugKm2to6(km)		if(km == 4) 			gCounterKm2to6++
+// #define debugKm12to15(km)	if(km == 14) 			gCounterKm12to15++
+// #define debugKm41to49(km)	if(km == 45) 			gCounterKm41to49++
+// #define debugKm104to112(km)	if(km == 107) 			gCounterKm104to112++
+// #define debugKm153to162(km)	if(km == 158) 			gCounterKm153to162++
+// #define debugKm194to196(km)	if(km == 195) 			gCounterKm194to196++
+
+// 30
+#define debugArray(km)	\
+	((km == 1)?gCounterArray[0]++:((km == 4)?gCounterArray[1]++:((km == 9)?gCounterArray[2]++:((km == 14)?gCounterArray[3]++:((km == 18)?gCounterArray[4]++:\
+	((km == 25)?gCounterArray[5]++:((km == 32)?gCounterArray[6]++:((km == 37)?gCounterArray[7]++:((km == 45)?gCounterArray[8]++:((km == 53)?gCounterArray[9]++:\
+	((km == 61)?gCounterArray[10]++:((km == 70)?gCounterArray[11]++:((km == 78)?gCounterArray[12]++:((km == 85)?gCounterArray[13]++:((km == 97)?gCounterArray[14]++:\
+	((km == 108)?gCounterArray[15]++:((km == 115)?gCounterArray[16]++:((km == 127)?gCounterArray[17]++:((km == 137)?gCounterArray[18]++:((km == 143)?gCounterArray[19]++:\
+	((km == 150)?gCounterArray[20]++:((km == 157)?gCounterArray[21]++:((km == 165)?gCounterArray[22]++:((km == 173)?gCounterArray[23]++:((km == 180)?gCounterArray[24]++:\
+	((km == 185)?gCounterArray[25]++:((km == 192)?gCounterArray[26]++:((km == 195)?gCounterArray[27]++:((km == 198)?gCounterArray[28]++:((km == 202)?gCounterArray[29]++:\
+	gCounterArray[30]))))))))))))))))))))))))))))))
 
 // =========================
 // ======= Histogram =======
@@ -171,10 +181,12 @@ class Car : public Process
 	void Behavior()
 	{
 		gCounterCar++;
+
+		double randomNumber = Random();
 		if (gDirection == PRAHA_BRNO)
-			mCurrentPosition = najezdPrahaBrno(Random());
+			mCurrentPosition = najezdPrahaBrno(randomNumber);
 		else
-			mCurrentPosition = najezdBrnoPraha(Random());
+			mCurrentPosition = najezdBrnoPraha(randomNumber);
 
 		mEntryTime = Time;
 		gHighway[mCurrentPosition]->Enter(this, 1);
@@ -182,13 +194,15 @@ class Car : public Process
 		if (gDirection == PRAHA_BRNO)
 			do
 			{
-				debugKm1to2(mCurrentPosition);
-				debugKm2to6(mCurrentPosition);
-				debugKm12to15(mCurrentPosition);
-				debugKm41to49(mCurrentPosition);
-				debugKm104to112(mCurrentPosition);
-				debugKm153to162(mCurrentPosition);
-				debugKm194to196(mCurrentPosition);
+				// debugKm1to2(mCurrentPosition);
+				// debugKm2to6(mCurrentPosition);
+				// debugKm12to15(mCurrentPosition);
+				// debugKm41to49(mCurrentPosition);
+				// debugKm104to112(mCurrentPosition);
+				// debugKm153to162(mCurrentPosition);
+				// debugKm194to196(mCurrentPosition);
+
+				debugArray(mCurrentPosition);
 
 				if ((Time - mEntryTime) != 0)
 				{
@@ -209,12 +223,6 @@ class Car : public Process
 		else
 			do
 			{
-				debugKm1to2(mCurrentPosition);
-				debugKm2to6(mCurrentPosition);
-				debugKm12to15(mCurrentPosition);
-				debugKm41to49(mCurrentPosition);
-				debugKm153to162(mCurrentPosition);
-				debugKm194to196(mCurrentPosition);
 
 				if ((Time - mEntryTime) != 0)
 				{
@@ -361,28 +369,44 @@ int main()
 
 	destroyHighway();
 
-	_Print("\n\nDalnici projelo %d aut\n", gCounterCar);
-	_Print("Na dalnici se staly %d nehody\n\n", gCounterAccident);
+	Print("Dalnici projelo %d aut\n", gCounterCar);
+	Print("Na dalnici se staly %d nehody\n\n", gCounterAccident);
 
-
-	// _Print("Na km   1 -   2 projelo %d aut. Mělo by projet 88 460\n",gCounterKm1to2);
-	// _Print("Na km   2 -   6 projelo %d aut. Mělo by projet 79 360\n",gCounterKm2to6);
-	// _Print("Na km  12 -  15 projelo %d aut. Mělo by projet 73 397\n",gCounterKm12to15);
-	// _Print("Na km  41 -  49 projelo %d aut. Mělo by projet 37 054\n",gCounterKm41to49);
-	// _Print("Na km 153 - 162 projelo %d aut. Mělo by projet 35 357\n",gCounterKm153to162);
-	// _Print("Na km 194 - 196 projelo %d aut. Mělo by projet 65 016\n",gCounterKm194to196);
-
-	_Print("Na km   1 -   2 projelo %d aut. Mělo by projet 34 499\n", gCounterKm1to2);
-	_Print("Na km   2 -   6 projelo %d aut. Mělo by projet 24 007\n", gCounterKm2to6);
-	_Print("Na km  12 -  15 projelo %d aut. Mělo by projet 22 753\n", gCounterKm12to15);
-	_Print("Na km  41 -  49 projelo %d aut. Mělo by projet 11 487\n", gCounterKm41to49);
-	_Print("Na km 104 - 112 projelo %d aut. Mělo by projet 14 596\n", gCounterKm104to112);
-	_Print("Na km 153 - 162 projelo %d aut. Mělo by projet 15 204\n", gCounterKm153to162);
-	_Print("Na km 194 - 196 projelo %d aut. Mělo by projet 30 558\n\n", gCounterKm194to196);
+	Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 34 499\n", gCounterArray[0]);
+	Print("Na km   2 -   6   (4) projelo %d aut. Mělo projet 27 776\n", gCounterArray[1]);
+	Print("Na km   6 -  12   (9) projelo %d aut. Mělo projet 21 263\n", gCounterArray[2]);
+	Print("Na km  12 -  15  (14) projelo %d aut. Mělo projet 22 310\n", gCounterArray[3]);
+	Print("Na km  15 -  21  (18) projelo %d aut. Mělo projet 18 494\n", gCounterArray[4]);
+	Print("Na km  21 -  29  (25) projelo %d aut. Mělo projet 12 332\n", gCounterArray[5]);
+	Print("Na km  29 -  34  (32) projelo %d aut. Mělo projet 12 128\n", gCounterArray[6]);
+	Print("Na km  34 -  41  (37) projelo %d aut. Mělo projet 11 769\n", gCounterArray[7]);
+	Print("Na km  41 -  49  (45) projelo %d aut. Mělo projet 11 487\n", gCounterArray[8]);
+	Print("Na km  49 -  56  (53) projelo %d aut. Mělo projet 13 211\n", gCounterArray[9]);
+	Print("Na km  56 -  66  (61) projelo %d aut. Mělo projet 11 372\n", gCounterArray[10]);
+	Print("Na km  66 -  75  (70) projelo %d aut. Mělo projet 11 540\n", gCounterArray[11]);
+	Print("Na km  75 -  81  (78) projelo %d aut. Mělo projet 11 324\n", gCounterArray[12]);
+	Print("Na km  81 -  90  (85) projelo %d aut. Mělo projet 11 958\n", gCounterArray[13]);
+	Print("Na km  90 - 104  (97) projelo %d aut. Mělo projet 14 067\n", gCounterArray[14]);
+	Print("Na km 104 - 112 (108) projelo %d aut. Mělo projet 14 596\n", gCounterArray[15]);
+	Print("Na km 112 - 119 (115) projelo %d aut. Mělo projet 13 884\n", gCounterArray[16]);
+	Print("Na km 119 - 134 (127) projelo %d aut. Mělo projet 14 041\n", gCounterArray[17]);
+	Print("Na km 134 - 141 (137) projelo %d aut. Mělo projet 14 637\n", gCounterArray[18]);
+	Print("Na km 141 - 146 (143) projelo %d aut. Mělo projet 14 868\n", gCounterArray[19]);
+	Print("Na km 146 - 153 (150) projelo %d aut. Mělo projet 15 905\n", gCounterArray[20]);
+	Print("Na km 153 - 162 (157) projelo %d aut. Mělo projet 15 204\n", gCounterArray[21]);
+	Print("Na km 162 - 168 (165) projelo %d aut. Mělo projet 17 149\n", gCounterArray[22]);
+	Print("Na km 168 - 178 (173) projelo %d aut. Mělo projet 18 552\n", gCounterArray[23]);
+	Print("Na km 178 - 182 (180) projelo %d aut. Mělo projet 18 932\n", gCounterArray[24]);
+	Print("Na km 182 - 190 (185) projelo %d aut. Mělo projet 13 712\n", gCounterArray[25]);
+	Print("Na km 190 - 194 (192) projelo %d aut. Mělo projet 26 511\n", gCounterArray[26]);
+	Print("Na km 194 - 196 (195) projelo %d aut. Mělo projet 30 558\n", gCounterArray[27]);
+	Print("Na km 196 - 201 (198) projelo %d aut. Mělo projet 22 272\n", gCounterArray[28]);
+	Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 14 483\n\n", gCounterArray[29]);
 
 	// hZdrzeni.Output();
 	// hKilometry.Output();
 
+	std::cout << std::endl;
 	return 0;
 }
 // ========= MAIN ==========
