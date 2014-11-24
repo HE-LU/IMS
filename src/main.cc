@@ -21,7 +21,7 @@
 
 // =========================
 // ====== Definitions ======
-// #define DEBUG
+ #define DEBUG
 
 #define OUTPUT_FILE				"output.out"
 #define SIMULATION_DURATION		1
@@ -33,9 +33,9 @@
 #define CAPACITY_LIMITED		CAPACITY / 2
 #define HIGHWAY_LENGTH			204
 
-#define GENERATE_CAR_DAY		0.905		//  6:00 - 18:00
-#define GENERATE_CAR_EVENING	1.54		// 18:00 - 22:00
-#define GENERATE_CAR_NIGHT		4.6 		// 22:00 -  6:00
+#define GENERATE_CAR_DAY		0.38		//  6:00 - 18:00
+#define GENERATE_CAR_EVENING	0.64		// 18:00 - 22:00
+#define GENERATE_CAR_NIGHT		1.923  		// 22:00 -  6:00
 
 #define GENERATE_ACCIDENT		60000
 
@@ -64,24 +64,25 @@ const int ENTRIES_BRNO_PRAHA[]	= {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 50
 #define isEntryPrahaBrno(km) 	(std::find(std::begin(ENTRIES_PRAHA_BRNO), std::end(ENTRIES_PRAHA_BRNO), km) != std::end(ENTRIES_PRAHA_BRNO))
 #define isEntryBrnoPraha(km) 	(std::find(std::begin(ENTRIES_BRNO_PRAHA), std::end(ENTRIES_BRNO_PRAHA), km) != std::end(ENTRIES_BRNO_PRAHA))
 
-#define isUnderContructionPrahaBrno(i) ((i == 38) || (i >= 40  && i <= 50) || (i >= 65 && i <= 77))
-#define isUnderContructionBrnoPraha(i) ((i >= 127 && i <= 138 ) || (i >= 153  && i <= 163))
+#define isUnderConstructionPrahaBrno(i) ((i == 38) || (i >= 40  && i <= 50) || (i >= 65 && i <= 77))
+#define isUnderConstructionBrnoPraha(i) ((i >= 127 && i <= 138 ) || (i >= 153  && i <= 163))
 
 #define najezdPrahaBrno(x) \
-	((x < 0.2724903246) ?   0 : ((x < 0.5449806492) ?   1 : ((x < 0.5449806492) ?   2 : ((x < 0.5449806492) ?   6 : ((x < 0.5449806492) ?   8 : \
-	((x < 0.5615196272) ?  12 : ((x < 0.5615196272) ?  15 : ((x < 0.5615196272) ?  21 : ((x < 0.5615196272) ?  29 : ((x < 0.5615196272) ?  34 : \
-	((x < 0.5615196272) ?  41 : ((x < 0.5887528631) ?  49 : ((x < 0.5887528631) ?  56 : ((x < 0.5913908854) ?  66 : ((x < 0.6014216887) ?  81 : \
-	((x < 0.6347365927) ?  90 : ((x < 0.6430929626) ? 104 : ((x < 0.6430929626) ? 112 : ((x < 0.6455730195) ? 119 : ((x < 0.6549877577) ? 134 : \
-	((x < 0.6586367585) ? 141 : ((x < 0.6750177711) ? 146 : ((x < 0.6750177711) ? 153 : ((x < 0.7057420425) ? 162 : ((x < 0.7279045889) ? 168 : \
-	((x < 0.7339072743) ? 178 : ((x < 0.7339072743) ? 182 : ((x < 0.9360871969) ? 190 : ((x < 1) ? 194 : ((x < 1) ? 196 : 201))))))))))))))))))))))))))))))
-
+		((x < 0.2088943582) ?   0 : ((x < 0.3846706608) ?   1 : ((x < 0.3899612859) ?   2 : ((x < 0.39984191) ?   6 : ((x < 0.4052313413) ?   8 : \
+        ((x < 0.422720046) ?  12 : ((x < 0.4294568351) ?  15 : ((x < 0.4344420591) ?  21 : ((x < 0.4422387698) ?  29 : ((x < 0.4653145182) ?  34 : \
+        ((x < 0.4820666673) ?  41 : ((x < 0.502142299) ?  49 : ((x < 0.5069478752) ?  56 : ((x < 0.5177267379) ?  66 : ((x < 0.5254336247) ?  81 : \
+        ((x < 0.5633842036) ?  90 : ((x < 0.5845377215) ? 104 : ((x < 0.590187642) ? 112 : ((x < 0.6062212002) ? 119 : ((x < 0.6234224685) ? 134 : \
+        ((x < 0.6391416432) ? 141 : ((x < 0.6594687817) ? 146 : ((x < 0.6694482121) ? 153 : ((x < 0.6935030405) ? 162 : ((x < 0.7203154614) ? 168 : \
+        ((x < 0.743651699) ? 178 : ((x < 0.7516909341) ? 182 : ((x < 0.8762317096) ? 190 : ((x < 0.9647710839) ? 194 : ((x < 0.9878468324) ? 196 : 201))))))))))))))))))))))))))))))							
+							
 #define sjezdPrahaBrno(x) \
-	((isExitPrahaBrno(x)==0) ? 0   : ((x==2)   ? 0.2 : ((x==6)   ? 0.075  : ((x==8)   ? 0.075 : ((x==10)  ? 0.075: \
-	((x==15)  ? 0.185 : ((x==21)  ? 0.34 : ((x==29)  ? 0.04 : ((x==34)  ? 0.02 : ((x==41)  ? 0.01 : \
-	((x==49)  ? 0.01 : ((x==56)  ? 0.12 : ((x==66)  ? 0.01 : ((x==75)  ? 0.01 : ((x==90)  ? 0.01 : \
-	((x==104) ? 0.01 : ((x==112) ? 0.01 : ((x==119) ? 0.01 : ((x==134) ? 0.01 : ((x==141) ? 0.01 : \
-	((x==146) ? 0.01 : ((x==153) ? 0.01 : ((x==162) ? 0.01 : ((x==168) ? 0.01 : ((x==178) ? 0.01 : \
-	((x==182) ? 0.28 : ((x==190) ? 0.01 : ((x==194) ? 0.01 : ((x==196) ? 0.27 : ((x==201) ? 0.33 : 1))))))))))))))))))))))))))))))
+	((isExitPrahaBrno(x)==0) ? 0   : ((x==2)   ? 0.2 : ((x==6)   ? 0.12  : ((x==8)   ? 0.12 : ((x==10)  ? 0.1: \
+	((x==15)  ? 0.21 : ((x==21)  ? 0.292 : ((x==29)  ? 0.11 : ((x==34)  ? 0.2 : ((x==41)  ? 0.15 : \
+	((x==49)  ? 0.08 : ((x==56)  ? 0.135 : ((x==66)  ? 0.1 : ((x==75)  ? 0.05 : ((x==90)  ? 0.12 : \
+	((x==104) ? 0.12 : ((x==112) ? 0.1 : ((x==119) ? 0.1 : ((x==134) ? 0.08 : ((x==141) ? 0.1 : \
+	((x==146) ? 0.08 : ((x==153) ? 0.1 : ((x==162) ? 0.1 : ((x==168) ? 0.1 : ((x==178) ? 0.1 : \
+	((x==182) ? 0.18 : ((x==190) ? 0.18 : ((x==194) ? 0.21 : ((x==196) ? 0.31 : ((x==201) ? 0.36 : 1))))))))))))))))))))))))))))))
+
 
 #define najezdBrnoPraha(x) \
 	((x < 0.0222) ?   0 : ((x < 0.0535) ?   2 : ((x < 0.1414) ?   7 : ((x < 0.2210) ?   9 : ((x < 0.2519) ?  13 : \
@@ -127,7 +128,7 @@ unsigned long gCounterArray[30];
 // =========================
 // ======= Histogram =======
 Histogram					hZdrzeni("Doba cakania v kolone v sec", 0, 900 , 12);
-Histogram					hKilometry("kilometre s kolonou", 0, 1, HIGHWAY_LENGTH);
+Histogram					hKilometry("Kolony na km: ", 0, 1, HIGHWAY_LENGTH);
 // ======= Histogram =======
 // =========================
 
@@ -185,7 +186,9 @@ class Car : public Process
 				mCurrentSpeed = Normal(1.0, 0);
 				mCurrentSpeed = 80 + mCurrentSpeed * 50;
 				if(mCurrentSpeed > gHighway[mCurrentPosition]->mMaxSpeed)
+				{
 					mCurrentSpeed = gHighway[mCurrentPosition]->mMaxSpeed;
+				}
 
 				Wait(1000 / mCurrentSpeed);
 				mEntryTime = Time;
@@ -226,11 +229,12 @@ class Accident : public Process
 		gCounterAccident++;
 
 		int position = Uniform(0, HIGHWAY_LENGTH - 1);
-		bool critical = (Random()>0.01);
+		bool critical = (Random()>0.98);
 		double speedBackup = gHighway[position]->mMaxSpeed;
 		double repairTime;
 
 		Print("Nehoda na %d km\n", position);
+		std::cout << "Time: " << Time/3600 << std::endl;
 
 		if(critical)
 		{
@@ -242,9 +246,11 @@ class Accident : public Process
 		{
 			int newSpeed = Exponential(80);
 			if(newSpeed>100) newSpeed = 100;
+			std::cout << "Accident! Speed: " << newSpeed << std::endl;
+			repairTime = Uniform(5400,7200);
 			gHighway[position]->mMaxSpeed = newSpeed;
 		}
-
+		std::cout << "Repair time: " << repairTime << std::endl;
 		Wait(repairTime);
 		gHighway[position]->mMaxSpeed = speedBackup;
 	}
@@ -307,7 +313,7 @@ void initHighway()
 			if (isExitPrahaBrno(i))
 				exit = true;
 
-			if (isUnderContructionPrahaBrno(i))
+			if (isUnderConstructionPrahaBrno(i))
 			{
 				maxSpeed = 90;
 				capacity = CAPACITY_LIMITED;
@@ -318,7 +324,7 @@ void initHighway()
 			if (isExitBrnoPraha(i))
 				exit = true;
 
-			if (isUnderContructionBrnoPraha(i))
+			if (isUnderConstructionBrnoPraha(i))
 			{
 				maxSpeed = 90;
 				capacity = CAPACITY_LIMITED;
