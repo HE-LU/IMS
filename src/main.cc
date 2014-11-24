@@ -64,7 +64,7 @@ const int ENTRIES_BRNO_PRAHA[]	= {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 50
 #define isEntryPrahaBrno(km) 	(std::find(std::begin(ENTRIES_PRAHA_BRNO), std::end(ENTRIES_PRAHA_BRNO), km) != std::end(ENTRIES_PRAHA_BRNO))
 #define isEntryBrnoPraha(km) 	(std::find(std::begin(ENTRIES_BRNO_PRAHA), std::end(ENTRIES_BRNO_PRAHA), km) != std::end(ENTRIES_BRNO_PRAHA))
 
-#define isUnderConstructionPrahaBrno(i) ((i == 38) || (i >= 40  && i <= 50) || (i >= 65 && i <= 77))
+#define isUnderConstructionPrahaBrno(i) ((i == 38)  || (i >= 40 && i <= 50) || (i >= 65 && i <= 77))
 #define isUnderConstructionBrnoPraha(i) ((i >= 127 && i <= 138 ) || (i >= 153  && i <= 163))
 
 #define najezdPrahaBrno(x) \
@@ -110,6 +110,7 @@ const int ENTRIES_BRNO_PRAHA[]	= {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 50
 	((km == 150) ? gCounterArray[20]++ : ((km == 157) ? gCounterArray[21]++ : ((km == 165) ? gCounterArray[22]++ : ((km == 173) ? gCounterArray[23]++ : \
 	((km == 180) ? gCounterArray[24]++ : ((km == 185) ? gCounterArray[25]++ : ((km == 192) ? gCounterArray[26]++ : ((km == 195) ? gCounterArray[27]++ : \
 	((km == 198) ? gCounterArray[28]++ : ((km == 202) ? gCounterArray[29]++ : gCounterArray[30]))))))))))))))))))))))))))))))
+
 // ======== Macros =========
 // =========================
 
@@ -135,6 +136,12 @@ Histogram					hKilometry("Kolony na km: ", 0, 1, HIGHWAY_LENGTH);
 
 // =========================
 // ======== Classes ========
+
+int limitedCapacity(int speed)
+{
+	return round( (1000 / (CAR_LENGTH + km2ms(speed))));
+}
+
 class HighwayPart : public Store
 {
 public:
@@ -231,6 +238,7 @@ class Accident : public Process
 		int position = Uniform(0, HIGHWAY_LENGTH - 1);
 		bool critical = (Random()>0.98);
 		double speedBackup = gHighway[position]->mMaxSpeed;
+		//int capacityBackup = gHighway[position]->Capacity();
 		double repairTime;
 
 		Print("Nehoda na %d km\n", position);
@@ -249,10 +257,13 @@ class Accident : public Process
 			std::cout << "Accident! Speed: " << newSpeed << std::endl;
 			repairTime = Uniform(5400,7200);
 			gHighway[position]->mMaxSpeed = newSpeed;
+			//gHighway[position]->SetCapacity(limitedCapacity(newSpeed));
+
 		}
 		std::cout << "Repair time: " << repairTime << std::endl;
 		Wait(repairTime);
 		gHighway[position]->mMaxSpeed = speedBackup;
+		//gHighway[position]->SetCapacity(capacityBackup);
 	}
 };
 
@@ -298,6 +309,7 @@ class GeneratorProgress : public Event
 
 // =========================
 // ======= Functions =======
+
 void initHighway()
 {
 	HighwayPart *tmp;
@@ -316,7 +328,7 @@ void initHighway()
 			if (isUnderConstructionPrahaBrno(i))
 			{
 				maxSpeed = 90;
-				capacity = CAPACITY_LIMITED;
+				capacity = limitedCapacity(maxSpeed);
 			}
 		}
 		else
@@ -327,7 +339,7 @@ void initHighway()
 			if (isUnderConstructionBrnoPraha(i))
 			{
 				maxSpeed = 90;
-				capacity = CAPACITY_LIMITED;
+				capacity = limitedCapacity(maxSpeed);
 			}
 		}
 
@@ -341,6 +353,7 @@ void destroyHighway()
 	for (int i = 0; i < HIGHWAY_LENGTH; i++)
 		delete gHighway[i];
 }
+
 // ======= Functions =======
 // =========================
 
