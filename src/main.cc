@@ -29,18 +29,20 @@
 
 #define CAR_LENGTH              5.1
 #define CAR_SPACING             45
-#define CAPACITY                round( (1000 / (CAR_LENGTH + CAR_SPACING)))*2
-#define CAPACITY_LIMITED        (CAPACITY / 2) + 5
+#define CAPACITY				130
+#define CAPACITY_LIMITED        70
+//#define CAPACITY                round( (1000 / (CAR_LENGTH + CAR_SPACING)))*2
+//#define CAPACITY_LIMITED        (CAPACITY / 2) + 5
 #define HIGHWAY_LENGTH          204
 
-#define GENERATE_CAR_DAY        0.45       //  6:00 - 18:00 Kolem 150k aut denne
-#define GENERATE_CAR_EVENING    0.77        // 18:00 - 22:00
-#define GENERATE_CAR_NIGHT      2.31       // 22:00 -  6:00  // Praha-Brno
+/*#define GENERATE_CAR_DAY        0.35       //  6:00 - 18:00 Kolem 150k aut denne
+#define GENERATE_CAR_EVENING    0.576        // 18:00 - 22:00
+#define GENERATE_CAR_NIGHT      1.71       // 22:00 -  6:00  // Praha-Brno*/
 
 
-/*#define GENERATE_CAR_DAY        0.2888        //  6:00 - 18:00 Kolem 180k aut denne
-#define GENERATE_CAR_EVENING    0.48        // 18:00 - 22:00
-#define GENERATE_CAR_NIGHT      1.45       // 22:00 -  6:00  // Brno-Praha*/
+#define GENERATE_CAR_DAY        0.31768        //  6:00 - 18:00 Kolem 180k aut denne
+#define GENERATE_CAR_EVENING    0.528        // 18:00 - 22:00
+#define GENERATE_CAR_NIGHT      1.595       // 22:00 -  6:00  // Brno-Praha*/
 
 
 // #define GENERATE_CAR_DAY     800.38      //  6:00 - 18:00
@@ -73,24 +75,24 @@ const int ENTRIES_BRNO_PRAHA[]  = {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 5
 #define isEntryPrahaBrno(km)    (std::find(std::begin(ENTRIES_PRAHA_BRNO), std::end(ENTRIES_PRAHA_BRNO), km) != std::end(ENTRIES_PRAHA_BRNO))
 #define isEntryBrnoPraha(km)    (std::find(std::begin(ENTRIES_BRNO_PRAHA), std::end(ENTRIES_BRNO_PRAHA), km) != std::end(ENTRIES_BRNO_PRAHA))
 
-#define isUnderConstructionPrahaBrno(i) ((i == 38)  || (i >= 40 && i <= 50) || (i >= 65 && i <= 77))
+#define isUnderConstructionPrahaBrno(i) ((i == 38)  || (i >= 40 && i <= 50) || (i >= 65 && i <= 77)) //CONSTRUCTION
 #define isUnderConstructionBrnoPraha(i) ((i >= 127 && i <= 138 ) || (i >= 153  && i <= 163))
 
 #define najezdPrahaBrno(x) \
-	((x < 0.1188943582)	?   0 : ((x < 0.3046706608)	?   1 : ((x < 0.3499612859)	?   2 : ((x < 0.36984191)	?   6 : ((x < 0.3852313413)	?   8 : \
-	((x < 0.422720046)	?  12 : ((x < 0.4294568351)	?  15 : ((x < 0.4344420591)	?  21 : ((x < 0.4422387698)	?  29 : ((x < 0.4653145182)	?  34 : \
+	((x < 0.2088943582)	?   0 : ((x < 0.2846706608)	?   1 : ((x < 0.3099612859)	?   2 : ((x < 0.32984191)	?   6 : ((x < 0.3652313413)	?   8 : \
+	((x < 0.452720046)	?  12 : ((x < 0.4294568351)	?  15 : ((x < 0.4344420591)	?  21 : ((x < 0.4422387698)	?  29 : ((x < 0.4653145182)	?  34 : \
 	((x < 0.4820666673)	?  41 : ((x < 0.502142299)	?  49 : ((x < 0.5069478752)	?  56 : ((x < 0.5177267379)	?  66 : ((x < 0.5254336247)	?  81 : \
 	((x < 0.5633842036)	?  90 : ((x < 0.5845377215)	? 104 : ((x < 0.590187642)	? 112 : ((x < 0.6062212002)	? 119 : ((x < 0.6234224685)	? 134 : \
 	((x < 0.6391416432)	? 141 : ((x < 0.6594687817)	? 146 : ((x < 0.6694482121)	? 153 : ((x < 0.6935030405)	? 162 : ((x < 0.7203154614)	? 168 : \
 	((x < 0.743651699)	? 178 : ((x < 0.7516909341)	? 182 : ((x < 0.8762317096)	? 190 : ((x < 0.9647710839)	? 194 : ((x < 0.9878468324)	? 196 : 201))))))))))))))))))))))))))))))
 
 #define sjezdPrahaBrno(x) \
-	((isExitPrahaBrno(x)==0)	? 0 : ((x==2)	? 0.33 : ((x==6)	? 0.20 : ((x==8)	? 0.10 : ((x==10)	? 0.0900: \
+	((isExitPrahaBrno(x)==0)	? 0 : ((x==2)	? 0.4 : ((x==6)	? 0.3 : ((x==8)	? 0.15 : ((x==10)	? 0.1500: \
 	((x==15)	? 0.210 : ((x==21)	? 0.292 : ((x==29)	? 0.110 : ((x==34)	? 0.200 : ((x==41)	? 0.150 : \
-	((x==49)	? 0.080 : ((x==56)	? 0.135 : ((x==66)	? 0.100 : ((x==75)	? 0.050 : ((x==90)	? 0.120 : \
-	((x==104)	? 0.120 : ((x==112)	? 0.100 : ((x==119)	? 0.100 : ((x==134)	? 0.080 : ((x==141)	? 0.100 : \
+	((x==49)	? 0.080 : ((x==56)	? 0.135 : ((x==66)	? 0.100 : ((x==75)	? 0.150 : ((x==90)	? 0.120 : \
+	((x==104)	? 0.120 : ((x==112)	? 0.100 : ((x==119)	? 0.100 : ((x==134)	? 0.120 : ((x==141)	? 0.100 : \
 	((x==146)	? 0.080 : ((x==153)	? 0.100 : ((x==162)	? 0.100 : ((x==168)	? 0.100 : ((x==178)	? 0.100 : \
-	((x==182)	? 0.180 : ((x==190)	? 0.180 : ((x==194)	? 0.210 : ((x==196)	? 0.310 : ((x==201)	? 0.360 : 1))))))))))))))))))))))))))))))
+	((x==182)	? 0.180 : ((x==190)	? 0.30 : ((x==194)	? 0.30 : ((x==196)	? 0.310 : ((x==201)	? 0.360 : 1))))))))))))))))))))))))))))))
 
 
 #define najezdBrnoPraha(x) \
@@ -98,20 +100,20 @@ const int ENTRIES_BRNO_PRAHA[]  = {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 5
         ((x < 0.2676764604) ?  21 : ((x < 0.2760812702) ?  25 : ((x < 0.2861487925) ?  35 : ((x < 0.2992629316) ?  41 : ((x < 0.3070492933) ?  50 : \
         ((x < 0.3167974532) ?  57 : ((x < 0.3252022629) ?  62 : ((x < 0.3417077276) ?  69 : ((x < 0.3614625788) ?  84 : ((x < 0.3866972849) ?  99 : \
         ((x < 0.4062341586) ?  113 : ((x < 0.4233073788) ? 128 : ((x < 0.4464636941) ? 137 : ((x < 0.455512298) ? 147 : ((x < 0.4752570108) ? 154 : \
-        ((x < 0.5140772959) ? 162 : ((x < 0.5368889024) ? 169 : ((x < 0.5616623071) ? 174 : ((x < 0.6145598881) ? 182 : ((x < 0.6783664862) ? 188 : \
+        ((x < 0.5040772959) ? 162 : ((x < 0.5368889024) ? 169 : ((x < 0.5616623071) ? 174 : ((x < 0.6145598881) ? 182 : ((x < 0.6783664862) ? 188 : \
         ((x < 0.7420767687) ? 193 : ((x < 0.7859612304) ? 195 : ((x < 0.8714185778) ? 197 : 201))))))))))))))))))))))))))))
 
 #define sjezdBrnoPraha(x) \
-	((isExitBrnoPraha(x)==0) ? 0 : ((x==2)   ? 0.1892 : ((x==7)   ? 0.1241 : ((x==9) ? 0.1259 : \
-	((x==13)  ? 0.1644 : ((x==21)  ? 0.1866 : ((x==25)  ? 0.2135 : ((x==35)  ? 0.1730 : ((x==41)  ? 0.1222 : \
-	((x==50)  ? 0.1206 : ((x==57)  ? 0.1215 : ((x==62)  ? 0.1206 : ((x==69)  ? 0.1208 : ((x==84)  ? 0.1204 : \
-	((x==91)  ? 0.1207 : ((x==99)  ? 0.1207 : ((x==113) ? 0.1199 : ((x==122) ? 0.1199 : ((x==137) ? 0.1398 : \
-	((x==147) ? 0.1207 : ((x==154) ? 0.1214 : ((x==162) ? 0.1216 : ((x==169) ? 0.1229 : ((x==174) ? 0.1236 : \
-	((x==182) ? 0.1240 : ((x==188) ? 0.1372 : ((x==191) ? 0.1420 : ((x==195) ? 0.2100 : ((x==198) ? 0.2 : \
-	((x==201) ? 0.18 : ((x==202) ? 0.17 : 1)))))))))))))))))))))))))))))))
+	((isExitBrnoPraha(x)==0) ? 0 : ((x==2)   ? 0.1292 : ((x==7)   ? 0.1141 : ((x==9) ? 0.1159 : \
+	((x==13)  ? 0.1244 : ((x==21)  ? 0.1266 : ((x==25)  ? 0.1435 : ((x==35)  ? 0.1230 : ((x==41)  ? 0.1022 : \
+	((x==50)  ? 0.1006 : ((x==57)  ? 0.1015 : ((x==62)  ? 0.1006 : ((x==69)  ? 0.1008 : ((x==84)  ? 0.1004 : \
+	((x==91)  ? 0.1007 : ((x==99)  ? 0.1007 : ((x==113) ? 0.1099 : ((x==122) ? 0.1099 : ((x==137) ? 0.1098 : \
+	((x==147) ? 0.1007 : ((x==154) ? 0.1014 : ((x==162) ? 0.1016 : ((x==169) ? 0.1029 : ((x==174) ? 0.1036 : \
+	((x==182) ? 0.1040 : ((x==188) ? 0.1072 : ((x==191) ? 0.1020 : ((x==195) ? 0.2000 : ((x==198) ? 0.19 : \
+	((x==201) ? 0.18 : ((x==202) ? 0.18 : 1)))))))))))))))))))))))))))))))
 
 #define debugArray(km)  \
-	((km == 1)   ? gCounterArray[0]++  : ((km == 4)   ? gCounterArray[1]++  : ((km == 10)  ? gCounterArray[2]++  : ((km == 14)  ? gCounterArray[3]++  : \
+	((km == 0)   ? gCounterArray[0]++  : ((km == 4)   ? gCounterArray[1]++  : ((km == 10)  ? gCounterArray[2]++  : ((km == 14)  ? gCounterArray[3]++  : \
 	((km == 18)  ? gCounterArray[4]++  : ((km == 25)  ? gCounterArray[5]++  : ((km == 32)  ? gCounterArray[6]++  : ((km == 37)  ? gCounterArray[7]++  : \
 	((km == 45)  ? gCounterArray[8]++  : ((km == 53)  ? gCounterArray[9]++  : ((km == 61)  ? gCounterArray[10]++ : ((km == 70)  ? gCounterArray[11]++ : \
 	((km == 78)  ? gCounterArray[12]++ : ((km == 85)  ? gCounterArray[13]++ : ((km == 100)  ? gCounterArray[14]++ : ((km == 108) ? gCounterArray[15]++ : \
@@ -130,6 +132,9 @@ unsigned long gCounterCar = 0;
 unsigned long gCounterAccident = 0;
 unsigned long gEnd = 0;
 unsigned long gNasrat = 0;
+unsigned long gKolona = 0;
+unsigned long gAvgSpeed = 0;
+unsigned long gPartCounter = 0;
 
 unsigned long gCounterArray[30];
 // ======== Global =========
@@ -167,6 +172,7 @@ class Car : public Process
     double mTimeBeforeEntry;
     int mCurrentPosition;
     double mCurrentSpeed;
+	int mPartCapacity;
 
     void Behavior()
     {
@@ -178,12 +184,13 @@ class Car : public Process
             mCurrentPosition = najezdBrnoPraha(randomNumber);
 			}
 		
-		if(mCurrentPosition == 201)
+		if(mCurrentPosition == 197)
 			gEnd++;
         mTimeBeforeEntry = Time;
+
         gHighway[mCurrentPosition]->Enter(this, 1);
 		
-		if(mCurrentPosition == 201)
+		if(mCurrentPosition == 197)
 			gNasrat++;
         gCounterCar++;
         do
@@ -192,12 +199,67 @@ class Car : public Process
 
             if ((Time - mTimeBeforeEntry) > 5)
             {
-                hZdrzeni(Time - mTimeBeforeEntry);
+				hZdrzeni(Time - mTimeBeforeEntry);
                 hKilometry(mCurrentPosition);
             }
 
             // mCurrentSpeed = Random();
+			
+			mPartCapacity = gHighway[mCurrentPosition]->Used();
             if (ms2km(gHighway[mCurrentPosition]->mMaxSpeed) == 130)
+            {
+				/*if(mPartCapacity >= 0 && mPartCapacity <= 15)
+			        mCurrentSpeed = Uniform(130,150);
+				else if(mPartCapacity >= 15 && mPartCapacity <= 30)
+					mCurrentSpeed = Uniform(110,130);		
+				else if(mPartCapacity >= 30 && mPartCapacity <= 35)
+					mCurrentSpeed = Uniform(80,100);		
+				else if(mPartCapacity >= 35)
+					mCurrentSpeed = Uniform(51,61);*/		
+
+
+				if(mPartCapacity >= 0 && mPartCapacity <= 20)
+			        mCurrentSpeed = Uniform(125,140);
+				else if(mPartCapacity >= 20 && mPartCapacity <= 33)
+					mCurrentSpeed = Uniform(110,130);		
+				else if(mPartCapacity >= 33 && mPartCapacity <= 36)
+					mCurrentSpeed = Uniform(100,120);		
+				else if(mPartCapacity >= 36 && mPartCapacity <= 39)
+			        mCurrentSpeed = Uniform(90,110);
+				else if(mPartCapacity >= 39 && mPartCapacity <= 42)
+					mCurrentSpeed = Uniform(85,100);		
+				else if(mPartCapacity >= 42 && mPartCapacity <= 47)
+					mCurrentSpeed = Uniform(80,95);
+				else if(mPartCapacity >= 47 && mPartCapacity <= 52){
+					mCurrentSpeed = Uniform(70,85);
+//					gKolona++;		
+				}
+				else if(mPartCapacity >= 52 && mPartCapacity <= 58 )
+					mCurrentSpeed = Uniform(50,70);
+				else if(mPartCapacity >= 58 && mPartCapacity <= 76)
+					mCurrentSpeed = Uniform(40,60);		
+				else if(mPartCapacity >= 76 && mPartCapacity <= 90)
+					mCurrentSpeed = Uniform(30,50);
+				else if(mPartCapacity >= 90 && mPartCapacity <= 114)
+				{
+					mCurrentSpeed = Uniform(30,40);
+					//hKilometry(mCurrentPosition);
+					//hZdrzeni(Time - mTimeBeforeEntry);
+				}
+				else if(mPartCapacity >= 114)
+				{
+					gKolona++;
+					mCurrentSpeed = 30;
+					//hKilometry(mCurrentPosition);
+					//hZdrzeni(Time - mTimeBeforeEntry);
+				}
+				gPartCounter++;
+				gAvgSpeed = gAvgSpeed + mCurrentSpeed; 
+				mCurrentSpeed = km2ms(mCurrentSpeed);
+				
+			}
+						
+            /*if (ms2km(gHighway[mCurrentPosition]->mMaxSpeed) == 130)
             {
                 mCurrentSpeed = Normal(130, 20);
                 if (mCurrentSpeed > 130)
@@ -206,9 +268,9 @@ class Car : public Process
                     mCurrentSpeed = 80;
 
                 mCurrentSpeed = km2ms(mCurrentSpeed);
-            }
+            }*/
             else
-            {
+            {	
                 mCurrentSpeed = gHighway[mCurrentPosition]->mMaxSpeed;
             }
 	        Wait(1000 / mCurrentSpeed);
@@ -237,6 +299,7 @@ class Accident : public Process
         gCounterAccident++;
 
         int position = Uniform(0, HIGHWAY_LENGTH - 1);
+		//int position = 15;
         double speedBackup = gHighway[position]->mMaxSpeed;
         double repairTime;
 
@@ -244,8 +307,9 @@ class Accident : public Process
         std::cout << std::endl << "Nehoda na " << position << "km" << std::endl;
         std::cout << "Time: " << Time / 3600 << std::endl;
 
-        int newSpeed = Uniform(10, 80);
-
+        int newSpeed = Uniform(20, 70);
+		
+		//int newSpeed = 15;
         std::cout << "Accident! Speed: " << newSpeed << std::endl;
         repairTime = Uniform(5400, 7200);
         gHighway[position]->mMaxSpeed = km2ms(newSpeed);
@@ -316,7 +380,7 @@ void initHighway()
 
             if (isUnderConstructionPrahaBrno(i))
             {
-                maxSpeed = 80;
+                maxSpeed = Uniform(60,80);
                 capacity = CAPACITY_LIMITED;
             }
         }
@@ -327,7 +391,7 @@ void initHighway()
 
             if (isUnderConstructionBrnoPraha(i))
             {
-                maxSpeed = 80;
+                maxSpeed = Uniform(60,80);
                 capacity = CAPACITY_LIMITED;
             }
         }
@@ -354,8 +418,8 @@ int main()
     SetOutput(OUTPUT_FILE);
     RandomSeed ( time(NULL) );
 
-    gDirection = PRAHA_BRNO;
-	//gDirection = BRNO_PRAHA;
+    //gDirection = PRAHA_BRNO;
+	gDirection = BRNO_PRAHA;
     initHighway();
     Init(0, SIMULATION_DURATION * DAY_IN_SECONDS);
     (new GeneratorProgress)->Activate();
@@ -367,10 +431,11 @@ int main()
 
     Print("Dalnici projelo %d aut\n", gCounterCar);
     Print("Na dalnici se staly %d nehody\n\n", gCounterAccident);
+	//std::cout << gAvgSpeed << std::endl;
 
 #ifdef DEBUG
 	// Praha-Brno
-    Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 34 499\n", gCounterArray[0]);
+   /* Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 34 499\n", gCounterArray[0]);
     Print("Na km   2 -   6   (4) projelo %d aut. Mělo projet 27 776\n", gCounterArray[1]);
     Print("Na km   6 -  12  (10) projelo %d aut. Mělo projet 21 263\n", gCounterArray[2]);
     Print("Na km  12 -  15  (14) projelo %d aut. Mělo projet 22 310\n", gCounterArray[3]);
@@ -399,12 +464,12 @@ int main()
     Print("Na km 190 - 194 (192) projelo %d aut. Mělo projet 26 511\n", gCounterArray[26]);
     Print("Na km 194 - 196 (195) projelo %d aut. Mělo projet 30 558\n", gCounterArray[27]);
     Print("Na km 196 - 201 (198) projelo %d aut. Mělo projet 22 272\n", gCounterArray[28]);
-    Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 14 483\n\n", gCounterArray[29]);
+    Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 14 483\n\n", gCounterArray[29]);*/
 #endif
 
 #ifdef DEBUG
 	// Brno-Praha
-   /* Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 18 433\n", gCounterArray[0]);
+    Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 18 433\n", gCounterArray[0]);
     Print("Na km   2 -   6   (4) projelo %d aut. Mělo projet 24 128\n", gCounterArray[1]);
     Print("Na km   6 -  12  (10) projelo %d aut. Mělo projet 34 458\n", gCounterArray[2]);
     Print("Na km  12 -  15  (14) projelo %d aut. Mělo projet 32 403\n", gCounterArray[3]);
@@ -433,16 +498,17 @@ int main()
     Print("Na km 190 - 194 (193) projelo %d aut. Mělo projet 49 659\n", gCounterArray[26]);
     Print("Na km 194 - 196 (195) projelo %d aut. Mělo projet 47 327\n", gCounterArray[27]);
     Print("Na km 196 - 201 (198) projelo %d aut. Mělo projet 51 584\n", gCounterArray[28]);
-    Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 53 961\n\n", gCounterArray[29]);*/
+    Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 53 961\n\n", gCounterArray[29]);
 #endif
 
 
     hZdrzeni.Output();
     hKilometry.Output();
-
     std::cout << std::endl;
 	std::cout << "Nulty pred km: " << gEnd << std::endl;
 	std::cout << "Nulty po km: " << gNasrat << std::endl;
+	std::cout <<  "Kolona: " << gKolona << std::endl;
+	std::cout <<  "Prumerna rychlost: " << gAvgSpeed/gPartCounter << std::endl;
     return 0;
 }
 // ========= MAIN ==========
