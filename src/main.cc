@@ -129,11 +129,11 @@ const int ENTRIES_BRNO_PRAHA[]  = {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 5
 // =========================
 // ======== Global =========
 int gDirection = BRNO_PRAHA;
+double gDayCoefficient = 0;
 int gDay = 0;
 int gTime = 0;
 unsigned long gCounterCar = 0;
 unsigned long gCounterAccident = 0;
-unsigned long gKolona = 0;
 unsigned long gAvgSpeed = 0;
 unsigned long gPartCounter = 0;
 
@@ -189,16 +189,23 @@ class Car : public Process
         mTimeBeforeEntry = Time;
         gHighway[mCurrentPosition]->Enter(this, 1);
 
-        gCounterCar++;
+		if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
+        	gCounterCar++;
+
         do
         {
             debugArray(mCurrentPosition);
-			gPartCounter++;
-            if ((Time - mTimeBeforeEntry) > 5)
-            {
-				hZdrzeni(Time - mTimeBeforeEntry);
-                hKilometry(mCurrentPosition);
-            }
+
+            if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
+			{
+				gPartCounter++;
+
+				if ((Time - mTimeBeforeEntry) > 5)
+	            {
+	            	hZdrzeni(Time - mTimeBeforeEntry);
+	                hKilometry(mCurrentPosition);
+	            }
+			}
 			
 			mPartCapacity = gHighway[mCurrentPosition]->Used();
 
@@ -238,11 +245,17 @@ class Car : public Process
 				mCurrentSpeed = km2ms(mCurrentSpeed);
 
 			if(ms2km(mCurrentSpeed) < 50)
-				hKilometryPomalaKolona(mCurrentPosition);
+			{
+				if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
+        			hKilometryPomalaKolona(mCurrentPosition);
+			}
 			else if(ms2km(mCurrentSpeed) >= 50 && ms2km(mCurrentSpeed) <= 70)
-				hKilometryRychlaKolona(mCurrentPosition);
+				if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
+        			hKilometryRychlaKolona(mCurrentPosition);
 				
-			gAvgSpeed+=ms2km(mCurrentSpeed);
+			if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
+				gAvgSpeed+=ms2km(mCurrentSpeed);
+
 	        Wait(1000 / mCurrentSpeed);
             mTimeBeforeEntry = Time;
             mCurrentPosition++;
@@ -263,21 +276,20 @@ class Accident : public Process
         gCounterAccident++;
 
         int position = Uniform(0, HIGHWAY_LENGTH - 1);
-		//int position = 15;
         double speedBackup = gHighway[position]->mMaxSpeed;
         double repairTime;
 
-        std::cout << std::endl << "Nehoda na " << position << "km" << std::endl;
-        std::cout << "Time: " << Time / 3600 << std::endl;
+        // std::cout << std::endl << "Nehoda na " << position << "km" << std::endl;
+        // std::cout << "Time: " << Time / 3600 << std::endl;
 
         int newSpeed = Uniform(20, 70);
 		
 		//int newSpeed = 15;
-        std::cout << "Accident! Speed: " << newSpeed << std::endl;
+        // std::cout << "Accident! Speed: " << newSpeed << std::endl;
         repairTime = Uniform(5400, 7200);
         gHighway[position]->mMaxSpeed = km2ms(newSpeed);
 
-        std::cout << "Repair time: " << repairTime << std::endl;
+        // std::cout << "Repair time: " << repairTime << std::endl;
         Wait(repairTime);
         gHighway[position]->mMaxSpeed = speedBackup;
     }
@@ -300,11 +312,11 @@ class GeneratorCar : public Event
         (new Car)->Activate();
 
         if (isDay(Time))
-            Activate(Time + Exponential(GENERATE_CAR_DAY));
+            Activate(Time + Exponential(GENERATE_CAR_DAY*gDayCoefficient));
         else if (isEvening(Time))
-            Activate(Time + Exponential(GENERATE_CAR_EVENING));
+            Activate(Time + Exponential(GENERATE_CAR_EVENING*gDayCoefficient));
         else
-            Activate(Time + Exponential(GENERATE_CAR_NIGHT));
+            Activate(Time + Exponential(GENERATE_CAR_NIGHT*gDayCoefficient));
     }
 };
 
@@ -382,7 +394,7 @@ int main(int argc, char *argv[])
 	{
 		if(strcmp(argv[1], "-d")==0 && strcmp(argv[3], "-t")==0 && strcmp(argv[5],"-s")==0)
 		{
-			if((*argv[2] >= '0' && *argv[2] <= '6') && (*argv[4] >= '0' && *argv[4] <= '2') && (*argv[6] >= '0' && *argv[6] <= '1'))
+			if((*argv[2] >= '0' && *argv[2] <= '6') && (*argv[4] >= '0' && *argv[4] <= '3') && (*argv[6] >= '0' && *argv[6] <= '1'))
 			{
 				help = false;
 
@@ -393,15 +405,30 @@ int main(int argc, char *argv[])
 					gDirection = PRAHA_BRNO;
 				else
 					gDirection = BRNO_PRAHA;
+
+				if(gDay == 0)
+					gDayCoefficient = 1.3; // Sunday
+				else if(gDay == 1)
+					gDayCoefficient = 0.9; // Monday
+				else if(gDay == 2)
+					gDayCoefficient = 1.0; // Tuesday
+				else if(gDay == 3)
+					gDayCoefficient = 1.0; // Wednesday
+				else if(gDay == 4)
+					gDayCoefficient = 1.0; // Thursday
+				else if(gDay == 5)
+					gDayCoefficient = 0.9; // Friday
+				else
+					gDayCoefficient = 1.3; // Saturday
 			}
 		}
 	}
 
 	if(help)
 	{
-		std::cout<<"Usage: "<< argv[0] << " -d <day> -t <time> -s <direction>\n";
-		std::cout<<"Days:\n" << "\tSunday = 0\n" << "\tMonday = 1\n" << "\tTuesday = 2\n" << "\tWednesday = 3\n" << "\tThursday = 4\n" << "\tFriday = 5\n" << "\tSaturday = 6\n\n";
-		std::cout<<"Time:\n" << "\t22:00 - 6:00 = 0\n" << "\t6:00 - 18:00 = 1\n" << "\t18:00 - 22:00 = 2\n";
+		std::cout<<"Usage: "<< argv[0] << " -d <day> -t <time> -s <direction>\n\n";
+		std::cout<<"Day:\n" << "\tSunday = 0\n" << "\tMonday = 1\n" << "\tTuesday = 2\n" << "\tWednesday = 3\n" << "\tThursday = 4\n" << "\tFriday = 5\n" << "\tSaturday = 6\n\n";
+		std::cout<<"Time:\n" << "\t0:00 - 24:00 = 0\n" << "\t22:00 - 6:00 = 1\n" << "\t6:00 - 18:00 = 2\n" << "\t18:00 - 22:00 = 3\n\n";
 		std::cout<<"Direction:\n" << "\tPraha -> Brno = 0\n" << "\tBrno -> Praha = 1\n";
 		return 0;
 	}
@@ -423,41 +450,41 @@ int main(int argc, char *argv[])
     if(gDirection == PRAHA_BRNO)
     {
     	// Praha-Brno
-	    std::cout << "Na km   0 -   2   (1) projelo" << gCounterArray[0]  << " aut. Statisticky 34 499\n";
-	    std::cout << "Na km   2 -   6   (4) projelo" << gCounterArray[1]  << " aut. Statisticky 27 776\n";
-	    std::cout << "Na km   6 -  12  (10) projelo" << gCounterArray[2]  << " aut. Statisticky 21 263\n";
-	    std::cout << "Na km  12 -  15  (14) projelo" << gCounterArray[3]  << " aut. Statisticky 22 310\n";
-	    std::cout << "Na km  15 -  21  (18) projelo" << gCounterArray[4]  << " aut. Statisticky 18 494\n";
-	    std::cout << "Na km  21 -  29  (25) projelo" << gCounterArray[5]  << " aut. Statisticky 12 332\n";
-	    std::cout << "Na km  29 -  34  (32) projelo" << gCounterArray[6]  << " aut. Statisticky 12 128\n";
-	    std::cout << "Na km  34 -  41  (37) projelo" << gCounterArray[7]  << " aut. Statisticky 11 769\n";
-	    std::cout << "Na km  41 -  49  (45) projelo" << gCounterArray[8]  << " aut. Statisticky 11 487\n";
-	    std::cout << "Na km  49 -  56  (53) projelo" << gCounterArray[9]  << " aut. Statisticky 13 211\n";
-	    std::cout << "Na km  56 -  66  (61) projelo" << gCounterArray[10] << " aut. Statisticky 11 372\n";
-	    std::cout << "Na km  66 -  75  (70) projelo" << gCounterArray[11] << " aut. Statisticky 11 540\n";
-	    std::cout << "Na km  75 -  81  (78) projelo" << gCounterArray[12] << " aut. Statisticky 11 324\n";
-	    std::cout << "Na km  81 -  90  (85) projelo" << gCounterArray[13] << " aut. Statisticky 11 958\n";
-	    std::cout << "Na km  90 - 104  (97) projelo" << gCounterArray[14] << " aut. Statisticky 14 067\n";
-	    std::cout << "Na km 104 - 112 (108) projelo" << gCounterArray[15] << " aut. Statisticky 14 596\n";
-	    std::cout << "Na km 112 - 119 (115) projelo" << gCounterArray[16] << " aut. Statisticky 13 884\n";
-	    std::cout << "Na km 119 - 134 (127) projelo" << gCounterArray[17] << " aut. Statisticky 14 041\n";
-	    std::cout << "Na km 134 - 141 (137) projelo" << gCounterArray[18] << " aut. Statisticky 14 637\n";
-	    std::cout << "Na km 141 - 146 (143) projelo" << gCounterArray[19] << " aut. Statisticky 14 868\n";
-	    std::cout << "Na km 146 - 153 (150) projelo" << gCounterArray[20] << " aut. Statisticky 15 905\n";
-	    std::cout << "Na km 153 - 162 (157) projelo" << gCounterArray[21] << " aut. Statisticky 15 204\n";
-	    std::cout << "Na km 162 - 168 (165) projelo" << gCounterArray[22] << " aut. Statisticky 17 149\n";
-	    std::cout << "Na km 168 - 178 (173) projelo" << gCounterArray[23] << " aut. Statisticky 18 552\n";
-	    std::cout << "Na km 178 - 182 (180) projelo" << gCounterArray[24] << " aut. Statisticky 18 932\n";
-	    std::cout << "Na km 182 - 190 (185) projelo" << gCounterArray[25] << " aut. Statisticky 13 712\n";
-	    std::cout << "Na km 190 - 194 (192) projelo" << gCounterArray[26] << " aut. Statisticky 26 511\n";
-	    std::cout << "Na km 194 - 196 (195) projelo" << gCounterArray[27] << " aut. Statisticky 30 558\n";
-	    std::cout << "Na km 196 - 201 (198) projelo" << gCounterArray[28] << " aut. Statisticky 22 272\n";
-	    std::cout << "Na km 201 - 203 (202) projelo" << gCounterArray[29] << " aut. Statisticky 14 483\n";
+	    std::cout << "\nNa km   0 -   2   (1) projelo " << gCounterArray[0]  << " aut. Statisticky 34 499\n";
+	    std::cout << "Na km   2 -   6   (4) projelo " << gCounterArray[1]  << " aut. Statisticky 27 776\n";
+	    std::cout << "Na km   6 -  12  (10) projelo " << gCounterArray[2]  << " aut. Statisticky 21 263\n";
+	    std::cout << "Na km  12 -  15  (14) projelo " << gCounterArray[3]  << " aut. Statisticky 22 310\n";
+	    std::cout << "Na km  15 -  21  (18) projelo " << gCounterArray[4]  << " aut. Statisticky 18 494\n";
+	    std::cout << "Na km  21 -  29  (25) projelo " << gCounterArray[5]  << " aut. Statisticky 12 332\n";
+	    std::cout << "Na km  29 -  34  (32) projelo " << gCounterArray[6]  << " aut. Statisticky 12 128\n";
+	    std::cout << "Na km  34 -  41  (37) projelo " << gCounterArray[7]  << " aut. Statisticky 11 769\n";
+	    std::cout << "Na km  41 -  49  (45) projelo " << gCounterArray[8]  << " aut. Statisticky 11 487\n";
+	    std::cout << "Na km  49 -  56  (53) projelo " << gCounterArray[9]  << " aut. Statisticky 13 211\n";
+	    std::cout << "Na km  56 -  66  (61) projelo " << gCounterArray[10] << " aut. Statisticky 11 372\n";
+	    std::cout << "Na km  66 -  75  (70) projelo " << gCounterArray[11] << " aut. Statisticky 11 540\n";
+	    std::cout << "Na km  75 -  81  (78) projelo " << gCounterArray[12] << " aut. Statisticky 11 324\n";
+	    std::cout << "Na km  81 -  90  (85) projelo " << gCounterArray[13] << " aut. Statisticky 11 958\n";
+	    std::cout << "Na km  90 - 104  (97) projelo " << gCounterArray[14] << " aut. Statisticky 14 067\n";
+	    std::cout << "Na km 104 - 112 (108) projelo " << gCounterArray[15] << " aut. Statisticky 14 596\n";
+	    std::cout << "Na km 112 - 119 (115) projelo " << gCounterArray[16] << " aut. Statisticky 13 884\n";
+	    std::cout << "Na km 119 - 134 (127) projelo " << gCounterArray[17] << " aut. Statisticky 14 041\n";
+	    std::cout << "Na km 134 - 141 (137) projelo " << gCounterArray[18] << " aut. Statisticky 14 637\n";
+	    std::cout << "Na km 141 - 146 (143) projelo " << gCounterArray[19] << " aut. Statisticky 14 868\n";
+	    std::cout << "Na km 146 - 153 (150) projelo " << gCounterArray[20] << " aut. Statisticky 15 905\n";
+	    std::cout << "Na km 153 - 162 (157) projelo " << gCounterArray[21] << " aut. Statisticky 15 204\n";
+	    std::cout << "Na km 162 - 168 (165) projelo " << gCounterArray[22] << " aut. Statisticky 17 149\n";
+	    std::cout << "Na km 168 - 178 (173) projelo " << gCounterArray[23] << " aut. Statisticky 18 552\n";
+	    std::cout << "Na km 178 - 182 (180) projelo " << gCounterArray[24] << " aut. Statisticky 18 932\n";
+	    std::cout << "Na km 182 - 190 (185) projelo " << gCounterArray[25] << " aut. Statisticky 13 712\n";
+	    std::cout << "Na km 190 - 194 (192) projelo " << gCounterArray[26] << " aut. Statisticky 26 511\n";
+	    std::cout << "Na km 194 - 196 (195) projelo " << gCounterArray[27] << " aut. Statisticky 30 558\n";
+	    std::cout << "Na km 196 - 201 (198) projelo " << gCounterArray[28] << " aut. Statisticky 22 272\n";
+	    std::cout << "Na km 201 - 203 (202) projelo " << gCounterArray[29] << " aut. Statisticky 14 483\n";
     }
     else
     {
 		// Brno-Praha
-	    std::cout << "Na km   0 -   2   (1) projelo " << gCounterArray[0]  << " aut. Statisticky 18 433\n";
+	    std::cout << "\nNa km   0 -   2   (1) projelo " << gCounterArray[0]  << " aut. Statisticky 18 433\n";
 	    std::cout << "Na km   2 -   6   (4) projelo " << gCounterArray[1]  << " aut. Statisticky 24 128\n";
 	    std::cout << "Na km   6 -  12  (10) projelo " << gCounterArray[2]  << " aut. Statisticky 34 458\n";
 	    std::cout << "Na km  12 -  15  (14) projelo " << gCounterArray[3]  << " aut. Statisticky 32 403\n";
@@ -490,15 +517,14 @@ int main(int argc, char *argv[])
     }
 
 	std::cout << "\nDalnici projelo " << gCounterCar << " aut\n";
-    std::cout << "Na dalnici se staly " << gCounterAccident << " nehody\n";
-	std::cout << "Kolona: " << gKolona << std::endl;
+    std::cout << "Za cely den se na dalnici staly " << gCounterAccident << " nehody\n";
 	std::cout << "Prumerna rychlost: " << gAvgSpeed/gPartCounter << std::endl;
 #endif
 
-    hZdrzeni.Output();
-    hKilometry.Output();
-	hKilometryPomalaKolona.Output();
-	hKilometryRychlaKolona.Output();
+ //    hZdrzeni.Output();
+ //    hKilometry.Output();
+	// hKilometryPomalaKolona.Output();
+	// hKilometryRychlaKolona.Output();
     
     return 0;
 }
