@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <iterator>
+#include <cstring>
 // ======= Libraries =======
 // =========================
 
@@ -128,10 +129,10 @@ const int ENTRIES_BRNO_PRAHA[]  = {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 5
 // =========================
 // ======== Global =========
 int gDirection = BRNO_PRAHA;
+int gDay = 0;
+int gTime = 0;
 unsigned long gCounterCar = 0;
 unsigned long gCounterAccident = 0;
-unsigned long gEnd = 0;
-unsigned long gNasrat = 0;
 unsigned long gKolona = 0;
 unsigned long gAvgSpeed = 0;
 unsigned long gPartCounter = 0;
@@ -147,7 +148,6 @@ Histogram                   hZdrzeni("Doba cekani v kolone v sec", 0, 900 , 12);
 Histogram                   hKilometry("Kolony na km: ", 0, 1, HIGHWAY_LENGTH);
 
 Histogram                   hKilometryPomalaKolona("Pomala kolona pod 50kmh na km: ", 0, 1, HIGHWAY_LENGTH);
-
 Histogram                   hKilometryRychlaKolona("Rychla kolona 50-70 kmh na km: ", 0, 1, HIGHWAY_LENGTH);
 // ======= Histogram =======
 // =========================
@@ -185,15 +185,9 @@ class Car : public Process
             mCurrentPosition = najezdPrahaBrno(randomNumber);
         else
             mCurrentPosition = najezdBrnoPraha(randomNumber);
-		
-		if(mCurrentPosition == 201)
-			gEnd++;
 
         mTimeBeforeEntry = Time;
         gHighway[mCurrentPosition]->Enter(this, 1);
-		
-		if(mCurrentPosition == 201)
-			gNasrat++;
 
         gCounterCar++;
         do
@@ -207,8 +201,6 @@ class Car : public Process
             }
 			
 			mPartCapacity = gHighway[mCurrentPosition]->Used();
-			//if(mCurrentPosition == 198)
-				//std::cout << mPartCapacity << std::endl;
 
 			if(mPartCapacity >= 0 && mPartCapacity <= 18)
 				mCurrentSpeed = Uniform(130,140);
@@ -275,7 +267,6 @@ class Accident : public Process
         double speedBackup = gHighway[position]->mMaxSpeed;
         double repairTime;
 
-        Print("\nNehoda na %d km\n", position);
         std::cout << std::endl << "Nehoda na " << position << "km" << std::endl;
         std::cout << "Time: " << Time / 3600 << std::endl;
 
@@ -378,20 +369,47 @@ void destroyHighway()
     for (int i = 0; i < HIGHWAY_LENGTH; i++)
         delete gHighway[i];
 }
-
 // ======= Functions =======
 // =========================
 
 
 // =========================
 // ========= MAIN ==========
-int main()
+int main(int argc, char *argv[])
 {
+	bool help = true;
+	if(argc == 7)
+	{
+		if(strcmp(argv[1], "-d")==0 && strcmp(argv[3], "-t")==0 && strcmp(argv[5],"-s")==0)
+		{
+			if((*argv[2] >= '0' && *argv[2] <= '6') && (*argv[4] >= '0' && *argv[4] <= '2') && (*argv[6] >= '0' && *argv[6] <= '1'))
+			{
+				help = false;
+
+				gDay=atoi(argv[2]);
+				gTime=atoi(argv[4]);
+
+				if(*argv[6] == '0')
+					gDirection = PRAHA_BRNO;
+				else
+					gDirection = BRNO_PRAHA;
+			}
+		}
+	}
+
+	if(help)
+	{
+		std::cout<<"Usage: "<< argv[0] << " -d <day> -t <time> -s <direction>\n";
+		std::cout<<"Days:\n" << "\tSunday = 0\n" << "\tMonday = 1\n" << "\tTuesday = 2\n" << "\tWednesday = 3\n" << "\tThursday = 4\n" << "\tFriday = 5\n" << "\tSaturday = 6\n\n";
+		std::cout<<"Time:\n" << "\t22:00 - 6:00 = 0\n" << "\t6:00 - 18:00 = 1\n" << "\t18:00 - 22:00 = 2\n";
+		std::cout<<"Direction:\n" << "\tPraha -> Brno = 0\n" << "\tBrno -> Praha = 1\n";
+		return 0;
+	}
+
+
     SetOutput(OUTPUT_FILE);
     RandomSeed ( time(NULL) );
-
-    //gDirection = PRAHA_BRNO;
-	gDirection = BRNO_PRAHA;
+	
     initHighway();
     Init(0, SIMULATION_DURATION * DAY_IN_SECONDS);
     (new GeneratorProgress)->Activate();
@@ -401,87 +419,86 @@ int main()
 
     destroyHighway();
 
-    Print("Dalnici projelo %d aut\n", gCounterCar);
-    Print("Na dalnici se staly %d nehody\n\n", gCounterAccident);
-	//std::cout << gAvgSpeed << std::endl;
-
 #ifdef DEBUG
-	// Praha-Brno
-    // Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 34 499\n", gCounterArray[0]);
-    // Print("Na km   2 -   6   (4) projelo %d aut. Mělo projet 27 776\n", gCounterArray[1]);
-    // Print("Na km   6 -  12  (10) projelo %d aut. Mělo projet 21 263\n", gCounterArray[2]);
-    // Print("Na km  12 -  15  (14) projelo %d aut. Mělo projet 22 310\n", gCounterArray[3]);
-    // Print("Na km  15 -  21  (18) projelo %d aut. Mělo projet 18 494\n", gCounterArray[4]);
-    // Print("Na km  21 -  29  (25) projelo %d aut. Mělo projet 12 332\n", gCounterArray[5]);
-    // Print("Na km  29 -  34  (32) projelo %d aut. Mělo projet 12 128\n", gCounterArray[6]);
-    // Print("Na km  34 -  41  (37) projelo %d aut. Mělo projet 11 769\n", gCounterArray[7]);
-    // Print("Na km  41 -  49  (45) projelo %d aut. Mělo projet 11 487\n", gCounterArray[8]);
-    // Print("Na km  49 -  56  (53) projelo %d aut. Mělo projet 13 211\n", gCounterArray[9]);
-    // Print("Na km  56 -  66  (61) projelo %d aut. Mělo projet 11 372\n", gCounterArray[10]);
-    // Print("Na km  66 -  75  (70) projelo %d aut. Mělo projet 11 540\n", gCounterArray[11]);
-    // Print("Na km  75 -  81  (78) projelo %d aut. Mělo projet 11 324\n", gCounterArray[12]);
-    // Print("Na km  81 -  90  (85) projelo %d aut. Mělo projet 11 958\n", gCounterArray[13]);
-    // Print("Na km  90 - 104  (97) projelo %d aut. Mělo projet 14 067\n", gCounterArray[14]);
-    // Print("Na km 104 - 112 (108) projelo %d aut. Mělo projet 14 596\n", gCounterArray[15]);
-    // Print("Na km 112 - 119 (115) projelo %d aut. Mělo projet 13 884\n", gCounterArray[16]);
-    // Print("Na km 119 - 134 (127) projelo %d aut. Mělo projet 14 041\n", gCounterArray[17]);
-    // Print("Na km 134 - 141 (137) projelo %d aut. Mělo projet 14 637\n", gCounterArray[18]);
-    // Print("Na km 141 - 146 (143) projelo %d aut. Mělo projet 14 868\n", gCounterArray[19]);
-    // Print("Na km 146 - 153 (150) projelo %d aut. Mělo projet 15 905\n", gCounterArray[20]);
-    // Print("Na km 153 - 162 (157) projelo %d aut. Mělo projet 15 204\n", gCounterArray[21]);
-    // Print("Na km 162 - 168 (165) projelo %d aut. Mělo projet 17 149\n", gCounterArray[22]);
-    // Print("Na km 168 - 178 (173) projelo %d aut. Mělo projet 18 552\n", gCounterArray[23]);
-    // Print("Na km 178 - 182 (180) projelo %d aut. Mělo projet 18 932\n", gCounterArray[24]);
-    // Print("Na km 182 - 190 (185) projelo %d aut. Mělo projet 13 712\n", gCounterArray[25]);
-    // Print("Na km 190 - 194 (192) projelo %d aut. Mělo projet 26 511\n", gCounterArray[26]);
-    // Print("Na km 194 - 196 (195) projelo %d aut. Mělo projet 30 558\n", gCounterArray[27]);
-    // Print("Na km 196 - 201 (198) projelo %d aut. Mělo projet 22 272\n", gCounterArray[28]);
-    // Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 14 483\n\n", gCounterArray[29]);
-#endif
+    if(gDirection == PRAHA_BRNO)
+    {
+    	// Praha-Brno
+	    std::cout << "Na km   0 -   2   (1) projelo" << gCounterArray[0]  << " aut. Statisticky 34 499\n";
+	    std::cout << "Na km   2 -   6   (4) projelo" << gCounterArray[1]  << " aut. Statisticky 27 776\n";
+	    std::cout << "Na km   6 -  12  (10) projelo" << gCounterArray[2]  << " aut. Statisticky 21 263\n";
+	    std::cout << "Na km  12 -  15  (14) projelo" << gCounterArray[3]  << " aut. Statisticky 22 310\n";
+	    std::cout << "Na km  15 -  21  (18) projelo" << gCounterArray[4]  << " aut. Statisticky 18 494\n";
+	    std::cout << "Na km  21 -  29  (25) projelo" << gCounterArray[5]  << " aut. Statisticky 12 332\n";
+	    std::cout << "Na km  29 -  34  (32) projelo" << gCounterArray[6]  << " aut. Statisticky 12 128\n";
+	    std::cout << "Na km  34 -  41  (37) projelo" << gCounterArray[7]  << " aut. Statisticky 11 769\n";
+	    std::cout << "Na km  41 -  49  (45) projelo" << gCounterArray[8]  << " aut. Statisticky 11 487\n";
+	    std::cout << "Na km  49 -  56  (53) projelo" << gCounterArray[9]  << " aut. Statisticky 13 211\n";
+	    std::cout << "Na km  56 -  66  (61) projelo" << gCounterArray[10] << " aut. Statisticky 11 372\n";
+	    std::cout << "Na km  66 -  75  (70) projelo" << gCounterArray[11] << " aut. Statisticky 11 540\n";
+	    std::cout << "Na km  75 -  81  (78) projelo" << gCounterArray[12] << " aut. Statisticky 11 324\n";
+	    std::cout << "Na km  81 -  90  (85) projelo" << gCounterArray[13] << " aut. Statisticky 11 958\n";
+	    std::cout << "Na km  90 - 104  (97) projelo" << gCounterArray[14] << " aut. Statisticky 14 067\n";
+	    std::cout << "Na km 104 - 112 (108) projelo" << gCounterArray[15] << " aut. Statisticky 14 596\n";
+	    std::cout << "Na km 112 - 119 (115) projelo" << gCounterArray[16] << " aut. Statisticky 13 884\n";
+	    std::cout << "Na km 119 - 134 (127) projelo" << gCounterArray[17] << " aut. Statisticky 14 041\n";
+	    std::cout << "Na km 134 - 141 (137) projelo" << gCounterArray[18] << " aut. Statisticky 14 637\n";
+	    std::cout << "Na km 141 - 146 (143) projelo" << gCounterArray[19] << " aut. Statisticky 14 868\n";
+	    std::cout << "Na km 146 - 153 (150) projelo" << gCounterArray[20] << " aut. Statisticky 15 905\n";
+	    std::cout << "Na km 153 - 162 (157) projelo" << gCounterArray[21] << " aut. Statisticky 15 204\n";
+	    std::cout << "Na km 162 - 168 (165) projelo" << gCounterArray[22] << " aut. Statisticky 17 149\n";
+	    std::cout << "Na km 168 - 178 (173) projelo" << gCounterArray[23] << " aut. Statisticky 18 552\n";
+	    std::cout << "Na km 178 - 182 (180) projelo" << gCounterArray[24] << " aut. Statisticky 18 932\n";
+	    std::cout << "Na km 182 - 190 (185) projelo" << gCounterArray[25] << " aut. Statisticky 13 712\n";
+	    std::cout << "Na km 190 - 194 (192) projelo" << gCounterArray[26] << " aut. Statisticky 26 511\n";
+	    std::cout << "Na km 194 - 196 (195) projelo" << gCounterArray[27] << " aut. Statisticky 30 558\n";
+	    std::cout << "Na km 196 - 201 (198) projelo" << gCounterArray[28] << " aut. Statisticky 22 272\n";
+	    std::cout << "Na km 201 - 203 (202) projelo" << gCounterArray[29] << " aut. Statisticky 14 483\n";
+    }
+    else
+    {
+		// Brno-Praha
+	    std::cout << "Na km   0 -   2   (1) projelo " << gCounterArray[0]  << " aut. Statisticky 18 433\n";
+	    std::cout << "Na km   2 -   6   (4) projelo " << gCounterArray[1]  << " aut. Statisticky 24 128\n";
+	    std::cout << "Na km   6 -  12  (10) projelo " << gCounterArray[2]  << " aut. Statisticky 34 458\n";
+	    std::cout << "Na km  12 -  15  (14) projelo " << gCounterArray[3]  << " aut. Statisticky 32 403\n";
+	    std::cout << "Na km  15 -  21  (18) projelo " << gCounterArray[4]  << " aut. Statisticky 31 996\n";
+	    std::cout << "Na km  21 -  29  (25) projelo " << gCounterArray[5]  << " aut. Statisticky 21 349\n";
+	    std::cout << "Na km  29 -  34  (32) projelo " << gCounterArray[6]  << " aut. Statisticky 20 920\n";
+	    std::cout << "Na km  34 -  41  (37) projelo " << gCounterArray[7]  << " aut. Statisticky 20 959\n";
+	    std::cout << "Na km  41 -  49  (45) projelo " << gCounterArray[8]  << " aut. Statisticky 20 153\n";
+	    std::cout << "Na km  49 -  56  (53) projelo " << gCounterArray[9]  << " aut. Statisticky 21 083\n";
+	    std::cout << "Na km  56 -  66  (61) projelo " << gCounterArray[10] << " aut. Statisticky 20 532\n";
+	    std::cout << "Na km  66 -  75  (70) projelo " << gCounterArray[11] << " aut. Statisticky 21 063\n";
+	    std::cout << "Na km  75 -  81  (78) projelo " << gCounterArray[12] << " aut. Statisticky 21 062\n";
+	    std::cout << "Na km  81 -  90  (85) projelo " << gCounterArray[13] << " aut. Statisticky 21 716\n";
+	    std::cout << "Na km  90 - 104  (97) projelo " << gCounterArray[14] << " aut. Statisticky 21 005\n";
+	    std::cout << "Na km 104 - 112 (108) projelo " << gCounterArray[15] << " aut. Statisticky 22 003\n";
+	    std::cout << "Na km 112 - 119 (115) projelo " << gCounterArray[16] << " aut. Statisticky 22 209\n";
+	    std::cout << "Na km 119 - 134 (127) projelo " << gCounterArray[17] << " aut. Statisticky 21 981\n";
+	    std::cout << "Na km 134 - 141 (137) projelo " << gCounterArray[18] << " aut. Statisticky 22 400\n";
+	    std::cout << "Na km 141 - 146 (143) projelo " << gCounterArray[19] << " aut. Statisticky 24 166\n";
+	    std::cout << "Na km 146 - 153 (150) projelo " << gCounterArray[20] << " aut. Statisticky 23 485\n";
+	    std::cout << "Na km 153 - 162 (157) projelo " << gCounterArray[21] << " aut. Statisticky 25 567\n";
+	    std::cout << "Na km 162 - 168 (165) projelo " << gCounterArray[22] << " aut. Statisticky 27 462\n";
+	    std::cout << "Na km 168 - 178 (173) projelo " << gCounterArray[23] << " aut. Statisticky 28 298\n";
+	    std::cout << "Na km 178 - 182 (180) projelo " << gCounterArray[24] << " aut. Statisticky 28 774\n";
+	    std::cout << "Na km 182 - 190 (189) projelo " << gCounterArray[25] << " aut. Statisticky 45 278\n";
+	    std::cout << "Na km 190 - 194 (193) projelo " << gCounterArray[26] << " aut. Statisticky 49 659\n";
+	    std::cout << "Na km 194 - 196 (195) projelo " << gCounterArray[27] << " aut. Statisticky 47 327\n";
+	    std::cout << "Na km 196 - 201 (198) projelo " << gCounterArray[28] << " aut. Statisticky 51 584\n";
+	    std::cout << "Na km 201 - 203 (202) projelo " << gCounterArray[29] << " aut. Statisticky 53 961\n";
+    }
 
-#ifdef DEBUG
-	// Brno-Praha
-    Print("Na km   0 -   2   (1) projelo %d aut. Mělo projet 18 433\n", gCounterArray[0]);
-    Print("Na km   2 -   6   (4) projelo %d aut. Mělo projet 24 128\n", gCounterArray[1]);
-    Print("Na km   6 -  12  (10) projelo %d aut. Mělo projet 34 458\n", gCounterArray[2]);
-    Print("Na km  12 -  15  (14) projelo %d aut. Mělo projet 32 403\n", gCounterArray[3]);
-    Print("Na km  15 -  21  (18) projelo %d aut. Mělo projet 31 996\n", gCounterArray[4]);
-    Print("Na km  21 -  29  (25) projelo %d aut. Mělo projet 21 349\n", gCounterArray[5]);
-    Print("Na km  29 -  34  (32) projelo %d aut. Mělo projet 20 920\n", gCounterArray[6]);
-    Print("Na km  34 -  41  (37) projelo %d aut. Mělo projet 20 959\n", gCounterArray[7]);
-    Print("Na km  41 -  49  (45) projelo %d aut. Mělo projet 20 153\n", gCounterArray[8]);
-    Print("Na km  49 -  56  (53) projelo %d aut. Mělo projet 21 083\n", gCounterArray[9]);
-    Print("Na km  56 -  66  (61) projelo %d aut. Mělo projet 20 532\n", gCounterArray[10]);
-    Print("Na km  66 -  75  (70) projelo %d aut. Mělo projet 21 063\n", gCounterArray[11]);
-    Print("Na km  75 -  81  (78) projelo %d aut. Mělo projet 21 062\n", gCounterArray[12]);
-    Print("Na km  81 -  90  (85) projelo %d aut. Mělo projet 21 716\n", gCounterArray[13]);
-    Print("Na km  90 - 104  (97) projelo %d aut. Mělo projet 21 005\n", gCounterArray[14]);
-    Print("Na km 104 - 112 (108) projelo %d aut. Mělo projet 22 003\n", gCounterArray[15]);
-    Print("Na km 112 - 119 (115) projelo %d aut. Mělo projet 22 209\n", gCounterArray[16]);
-    Print("Na km 119 - 134 (127) projelo %d aut. Mělo projet 21 981\n", gCounterArray[17]);
-    Print("Na km 134 - 141 (137) projelo %d aut. Mělo projet 22 400\n", gCounterArray[18]);
-    Print("Na km 141 - 146 (143) projelo %d aut. Mělo projet 24 166\n", gCounterArray[19]);
-    Print("Na km 146 - 153 (150) projelo %d aut. Mělo projet 23 485\n", gCounterArray[20]);
-    Print("Na km 153 - 162 (157) projelo %d aut. Mělo projet 25 567\n", gCounterArray[21]);
-    Print("Na km 162 - 168 (165) projelo %d aut. Mělo projet 27 462\n", gCounterArray[22]);
-    Print("Na km 168 - 178 (173) projelo %d aut. Mělo projet 28 298\n", gCounterArray[23]);
-    Print("Na km 178 - 182 (180) projelo %d aut. Mělo projet 28 774\n", gCounterArray[24]);
-    Print("Na km 182 - 190 (189) projelo %d aut. Mělo projet 45 278\n", gCounterArray[25]);
-    Print("Na km 190 - 194 (193) projelo %d aut. Mělo projet 49 659\n", gCounterArray[26]);
-    Print("Na km 194 - 196 (195) projelo %d aut. Mělo projet 47 327\n", gCounterArray[27]);
-    Print("Na km 196 - 201 (198) projelo %d aut. Mělo projet 51 584\n", gCounterArray[28]);
-    Print("Na km 201 - 203 (202) projelo %d aut. Mělo projet 53 961\n\n", gCounterArray[29]);
+	std::cout << "\nDalnici projelo " << gCounterCar << " aut\n";
+    std::cout << "Na dalnici se staly " << gCounterAccident << " nehody\n";
+	std::cout << "Kolona: " << gKolona << std::endl;
+	std::cout << "Prumerna rychlost: " << gAvgSpeed/gPartCounter << std::endl;
 #endif
-
 
     hZdrzeni.Output();
     hKilometry.Output();
 	hKilometryPomalaKolona.Output();
 	hKilometryRychlaKolona.Output();
-    std::cout << std::endl;
-	std::cout << "Nulty pred km: " << gEnd << std::endl;
-	std::cout << "Nulty po km: " << gNasrat << std::endl;
-	std::cout <<  "Kolona: " << gKolona << std::endl;
-	std::cout <<  "Prumerna rychlost: " << gAvgSpeed/gPartCounter << std::endl;
+    
     return 0;
 }
