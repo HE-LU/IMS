@@ -75,7 +75,7 @@ const int ENTRIES_BRNO_PRAHA[]  = {0, 2, 7/*2x*/, 9/*2x*/, 13, 21, 25, 35, 41, 5
 #define isEntryPrahaBrno(km)    (std::find(std::begin(ENTRIES_PRAHA_BRNO), std::end(ENTRIES_PRAHA_BRNO), km) != std::end(ENTRIES_PRAHA_BRNO))
 #define isEntryBrnoPraha(km)    (std::find(std::begin(ENTRIES_BRNO_PRAHA), std::end(ENTRIES_BRNO_PRAHA), km) != std::end(ENTRIES_BRNO_PRAHA))
 
-#define isUnderConstructionPrahaBrno(i) ((i == 38)  || (i >= 40 && i <= 50) || (i >= 65 && i <= 200)) //CONSTRUCTION
+#define isUnderConstructionPrahaBrno(i) ((i == 38)  || (i >= 40 && i <= 50) || (i >= 65 && i <= 77)) //CONSTRUCTION
 #define isUnderConstructionBrnoPraha(i) ((i >= 127 && i <= 138 ) || (i >= 153  && i <= 163))
 
 #define najezdPrahaBrno(x) \
@@ -199,7 +199,7 @@ class Car : public Process
         do
         {
             debugArray(mCurrentPosition);
-
+			gPartCounter++;
             if ((Time - mTimeBeforeEntry) > 5)
             {
 				hZdrzeni(Time - mTimeBeforeEntry);
@@ -207,30 +207,32 @@ class Car : public Process
             }
 			
 			mPartCapacity = gHighway[mCurrentPosition]->Used();
+			//if(mCurrentPosition == 198)
+				//std::cout << mPartCapacity << std::endl;
 
-			if(mPartCapacity >= 0 && mPartCapacity <= 20)
-				mCurrentSpeed = Uniform(125,140);
-			else if(mPartCapacity >= 20 && mPartCapacity <= 33)
-				mCurrentSpeed = Uniform(110,130);		
-			else if(mPartCapacity >= 33 && mPartCapacity <= 36)
-				mCurrentSpeed = Uniform(100,120);		
-			else if(mPartCapacity >= 36 && mPartCapacity <= 39)
-			    mCurrentSpeed = Uniform(90,110);
-			else if(mPartCapacity >= 39 && mPartCapacity <= 42)
-				mCurrentSpeed = Uniform(85,100);		
-			else if(mPartCapacity >= 42 && mPartCapacity <= 47)
-				mCurrentSpeed = Uniform(80,95);
-			else if(mPartCapacity >= 47 && mPartCapacity <= 52)
-				mCurrentSpeed = Uniform(65,85);
-			else if(mPartCapacity >= 52 && mPartCapacity <= 58)
-				mCurrentSpeed = Uniform(50,70);
-			else if(mPartCapacity >= 58 && mPartCapacity <= 76)
-				mCurrentSpeed = Uniform(40,60);
-			else if(mPartCapacity >= 76 && mPartCapacity <= 90)
+			if(mPartCapacity >= 0 && mPartCapacity <= 18)
+				mCurrentSpeed = Uniform(130,140);
+			else if(mPartCapacity >= 18 && mPartCapacity <= 23)
+				mCurrentSpeed = Uniform(120,130);		
+			else if(mPartCapacity >= 23 && mPartCapacity <= 25)
+				mCurrentSpeed = Uniform(110,120);		
+			else if(mPartCapacity >= 25 && mPartCapacity <= 28)
+			    mCurrentSpeed = Uniform(100,110);
+			else if(mPartCapacity >= 28 && mPartCapacity <= 40)
+				mCurrentSpeed = Uniform(90,100);		
+			else if(mPartCapacity >= 40 && mPartCapacity <= 43)
+				mCurrentSpeed = Uniform(80,90);
+			else if(mPartCapacity >= 43 && mPartCapacity <= 50)
+				mCurrentSpeed = Uniform(70,80);
+			else if(mPartCapacity >= 50 && mPartCapacity <= 55)
+				mCurrentSpeed = Uniform(60,70);
+			else if(mPartCapacity >= 55 && mPartCapacity <= 62)
+				mCurrentSpeed = Uniform(50,60);
+			else if(mPartCapacity >= 62 && mPartCapacity <= 102)
 				mCurrentSpeed = Uniform(40,50);
-			else if(mPartCapacity >= 90 && mPartCapacity <= 114)
+			else if(mPartCapacity >= 102 && mPartCapacity <= 120)
 				mCurrentSpeed = Uniform(30,40);
-			else if(mPartCapacity >= 114)
+			else if(mPartCapacity >= 120)
 				mCurrentSpeed = 30;		
 
 			if(ms2km(gHighway[mCurrentPosition]->mMaxSpeed) != 130)			
@@ -245,9 +247,10 @@ class Car : public Process
 
 			if(ms2km(mCurrentSpeed) < 50)
 				hKilometryPomalaKolona(mCurrentPosition);
-			else if(ms2km(mCurrentSpeed) >= 50 && ms2km(mCurrentSpeed) < 70)
+			else if(ms2km(mCurrentSpeed) >= 50 && ms2km(mCurrentSpeed) <= 70)
 				hKilometryRychlaKolona(mCurrentPosition);
 				
+			gAvgSpeed+=ms2km(mCurrentSpeed);
 	        Wait(1000 / mCurrentSpeed);
             mTimeBeforeEntry = Time;
             mCurrentPosition++;
@@ -387,7 +390,7 @@ int main()
     SetOutput(OUTPUT_FILE);
     RandomSeed ( time(NULL) );
 
-    // gDirection = PRAHA_BRNO;
+    //gDirection = PRAHA_BRNO;
 	gDirection = BRNO_PRAHA;
     initHighway();
     Init(0, SIMULATION_DURATION * DAY_IN_SECONDS);
