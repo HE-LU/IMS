@@ -507,10 +507,6 @@ int main(int argc, char *argv[])
     hKilometryKolona.Output();
     hKilometryPomalaKolona.Output();
     hKilometryRychlaKolona.Output();
-    for (int i = 0; i < 24; i ++)
-    {
-        std::cout << ""  << "" << gCarCounter[i] << std::endl;
-    }
 
     return 0;
 }
