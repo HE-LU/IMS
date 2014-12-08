@@ -122,6 +122,7 @@ unsigned long gCounterAccident = 0;
 unsigned long gAvgSpeed = 0;
 unsigned long gPartCounter = 0;
 unsigned long gCounterArray[30];
+unsigned long gCarCounter[24];
 // ======== Global =========
 // =========================
 
@@ -174,11 +175,16 @@ class Car : public Process
 
 		if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
         	gCounterCar++;
-
         do
         {
 			#ifdef DEBUG
-            	debugArray(mCurrentPosition);
+				if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0)){
+	            	debugArray(mCurrentPosition);
+					if(mCurrentPosition == 195)
+					{
+						gCarCounter[((int)Time/3600)]++;
+					}
+}
 			#endif
 
             if(((gTime == 1 && (Time <= 21600 || Time >= 79200)) || (gTime == 2 && (Time >= 21600 && Time <= 64800)) || (gTime == 3 && (Time >= 64800 && Time <= 79200)) || gTime == 0))
@@ -390,7 +396,7 @@ int main(int argc, char *argv[])
 					gDirection = BRNO_PRAHA;
 
 				if(gDay == 0)
-					gDayCoefficient = 1.3; // Sunday
+					gDayCoefficient = 1.15; // Sunday
 				else if(gDay == 1)
 					gDayCoefficient = 0.9; // Monday
 				else if(gDay == 2)
@@ -508,6 +514,10 @@ int main(int argc, char *argv[])
     hKilometryKolona.Output();
 	hKilometryPomalaKolona.Output();
 	hKilometryRychlaKolona.Output();
+	for(int i=0; i < 24;i ++)
+	{
+		std::cout << "Hour:" << i  << " : " << gCarCounter[i] << std::endl;
+	}
     
     return 0;
 }
